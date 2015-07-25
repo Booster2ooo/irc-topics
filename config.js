@@ -13,15 +13,15 @@ var
 		// irc module configuration
 	  , irc: {
 			// define the path where the logs will be stored at
-			logsDirectory: 'logs/'
+//			logsDirectory: 'logs/'
 			// define the name of the file where the error logs will be stored at
-		  , errorLogs: 'irc_errors'
+//		  , errorLogs: 'irc_errors'
 			// define the name of the file where the raw messages logs will be stored at
-		  , rawLogs: 'irc_raw'
+//		  , rawLogs: 'irc_raw'
 			// define the name of the file where the channel messages logs will be stored at
-		  , messageLogs: 'irc_messages'
+//		  , messageLogs: 'irc_messages'
 			// define the irc server used by the bot
-		  , server: 'irc.big-daddy.fr'
+			server: 'irc.big-daddy.fr'
 			// define the nickname of the bot
 		  , nick: 'logBotTest'
 			// define the options for the bot constructor (see https://node-irc.readthedocs.org/en/latest/API.html)
@@ -42,7 +42,7 @@ var
 		// database module configuration
 	  , db: {
 			// irc/channel related databases
-			channels {
+			channels: {
 				// users databases file prefix (#chan will be appended at the end to identify each channel)
 				users: './db/users'
 				// messages databases file prefix (#chan will be appended at the end to identify each channel)
