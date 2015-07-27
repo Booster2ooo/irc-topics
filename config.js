@@ -53,13 +53,13 @@ var
 			// events signature
 		  , events: {
 				/* INIT */
-				// all DBs initializing
-				dbInitializing: 'dbProxy.dbInitializing'
-				// all DBs initialized
-			  , dbInitialized: 'dbProxy.dbInitialized'
-				// error initialize all DBs
-			  , dbInitializeError: 'dbProxy.dbInitializeError'
-				// #chan DB initializing
+				// data context initialization
+				dataContextInitializing: 'dbProxy.dataContextInitializing'
+				// data context initialized
+			  , dataContextInitialized: 'dbProxy.dataContextInitialized'
+				// error initializing data context
+			  , dataContextInitializeError: 'dbProxy.dataContextInitializeError'
+				// #chan DB initialization
 			  , channelInitializing: 'dbProxy.channelInitializing'
 				// #chan DB initialized
 			  , channelInitialized: 'dbProxy.channelInitialized'
@@ -67,18 +67,48 @@ var
 			  , channelInitializeError: 'dbProxy.channelInitializeError'
 			  
 				/* LOAD */
-				// all DBs loading
-			  , dbLoading: 'dbProxy.dbLoading'
-				// all DBs loaded
-			  , dbLoaded: 'dbProxy.dbLoaded'
-				// error loading all DBs
-			  , dbLoadError: 'dbProxy.dbLoadError'
+				// data context loading
+			  , dataContextLoading: 'dbProxy.dataContextLoading'
+				// data context loaded
+			  , dataContexLoaded: 'dbProxy.dataContexLoaded'
+				// error loading data context
+			  , dataContexLoadError: 'dbProxy.dataContexLoadError'
 				// #chan DB loading
 			  , channelLoading: 'dbProxy.channelLoading'
 				// #chan DB loadded
 			  , channelLoaded: 'dbProxy.channelLoaded'
 				// #chan DB load error
 			  , channelLoadError: 'dbProxy.channelLoadError'
+			  
+				/* QUERIES */
+				// getAll method success
+			  , getAllSuccess: 'dbProxy.getAllSuccess'
+				// getAll method failed
+			  , getAllError: 'dbProxy.getAllError'
+				// get method success
+			  , getSuccess: 'dbProxy.getSuccess'
+				// get method failed
+			  , getError: 'dbProxy.getError'
+				// count method success
+			  , countSuccess: 'dbProxy.countSuccess'
+				// count method failed
+			  , countError: 'dbProxy.countError'
+				// append method success
+			  , appendSuccess: 'dbProxy.appendSuccess'
+				// append method failed
+			  , appendError: 'dbProxy.appendError'
+				// insert from append success
+			  , insertSuccess: 'dbProxy.insertSuccess'
+				// insert from append method failed
+			  , insertError: 'dbProxy.insertError'
+				// update from append success
+			  , updateSuccess: 'dbProxy.updateSuccess'
+				// update from append method failed
+			  , updateError: 'dbProxy.updateError'
+				// remove method success
+			  , removeSuccess: 'dbProxy.removeSuccess'
+				// remove method failed
+			  , removeError: 'dbProxy.removeError'
 			}
 		}
 		// define the constant EOL for the current OS
