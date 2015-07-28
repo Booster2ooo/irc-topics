@@ -264,26 +264,34 @@ var /* MODULES */
 		  , append: function append(channel, dbType, entity) {
 				return new Promise(function(resolve, reject) {
 					if(!entity._id) {
+						config.debug && console.log('Inserting in '+channel+dbType);
+						config.debug && console.log(entity);
 						db[channel][dbType].insert(entity, function (err) {
 							if(err) {
+								config.debug && console.log('Insert failed');
 								eventEmitter.emit(config.db.events.appendError, err);
 								eventEmitter.emit(config.db.events.insertError, err);
 								reject(err);
 								return;
 							}
+								config.debug && console.log('Insert success');
 							eventEmitter.emit(config.db.events.appendSuccess, entity);
 							eventEmitter.emit(config.db.events.insertSuccess, entity);
 							resolve(entity);
 						});
 					}
 					else {
+						config.debug && console.log('Updating in '+channel+dbType);
+						config.debug && console.log(entity);
 						db[channel][dbType].update({ _id: entity._id }, entity, {}, function (err, numReplaced) {
 							if(err) {
+								config.debug && console.log('Update failed');
 								eventEmitter.emit(config.db.events.appendError, err);
 								eventEmitter.emit(config.db.events.updateError, err);
 								reject(err);
 								return;
 							}
+							config.debug && console.log('Update success');
 							eventEmitter.emit(config.db.events.appendSuccess, entity);
 							eventEmitter.emit(config.db.events.updateSuccess, entity);
 							resolve(numReplaced);

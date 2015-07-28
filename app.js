@@ -10,17 +10,21 @@ var
   , dbProxy = require('./dbProxy.js')
 	// load events module
   , events = require('events')
+	// load irc proxy module
+  , ircProxy = require('./ircProxy.js')
   
 	/* INSTANCES */
   , db = new dbProxy(config)
   ;
 
-db.onLoaded(function(chans) {
-	console.log('event fired');
-	var p = db.append('#testbot', 'users',{ name: 'Booster', tracked: true});
-	p.then(function(res) {
-		console.log(res);
-	}).catch(function(err) {
+// start by initializing databases
+db.init()
+	.then(function(chans) {
+		// then launch the irc bot
+		ircProxy(config, db);
+	})
+	.catch(function(err) {
 		console.log(err);
-	});
-});
+	})
+	;
+	

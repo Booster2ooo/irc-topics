@@ -21,7 +21,7 @@ var
 			// define the name of the file where the channel messages logs will be stored at
 //		  , messageLogs: 'irc_messages'
 			// define the irc server used by the bot
-			server: 'irc.big-daddy.fr'
+			server: 'irc.xolus.net'
 			// define the nickname of the bot
 		  , nick: 'logBotTest'
 			// define the options for the bot constructor (see https://node-irc.readthedocs.org/en/latest/API.html)
