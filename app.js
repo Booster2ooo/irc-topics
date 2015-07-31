@@ -5,13 +5,13 @@ var
 	// load promise module
 	Promise = require('es6-promise').Promise
 	// load config module
-  , config = require('./config.js')
+  , config = require('./config/config.js')
 	// load database proxy module
-  , dbProxy = require('./dbProxy.js')
+  , dbProxy = require('./data/dbProxy.js')
 	// load events module
   , events = require('events')
 	// load irc proxy module
-  , ircProxy = require('./ircProxy.js')
+  , ircProxy = require('./irc/ircProxy.js')
   
 	/* INSTANCES */
   , db = new dbProxy(config)
