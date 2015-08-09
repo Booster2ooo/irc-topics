@@ -16,8 +16,16 @@ var  /* MODULES */
 			var title = 'IRC Topics'
 			  , channels = config.irc.options.channels
 			  , defaultChan = channels[0]
-			  , messages_promise = db.getAll(defaultChan, 'messages')
-			  , topics_promise = db.getAll(defaultChan, 'topics')
+			  , messages_promise = db.getAll({ 
+					channel: defaultChan
+				  , type: 'messages'
+				  , sort: { timestamp: 1 }
+				})
+			  , topics_promise = db.getAll({
+					channel: defaultChan
+				  , type: 'topics'
+				  , sort: { name: 1 }
+				})
 			  , messages = []
 			  , topics = []
 			  ;

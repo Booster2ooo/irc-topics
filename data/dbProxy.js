@@ -26,6 +26,10 @@ var /* MODULES */
 			db = {}
 			// used to stack promises
 		  , promisesQueue = []
+			// initialized status
+		  , initialized = false
+			// loaded status
+		  , loaded = false
 		  
 			/* FUNCTIONS (PRIVATE METHODS) */
 			// create a promise for loading a channel databases
@@ -49,6 +53,8 @@ var /* MODULES */
 							}
 						}
 						config.debug && console.log('Success initializing '+channel+' databases');
+						// update status
+						initialized = true;
 						// emit initialized event
 						eventEmitter.emit(config.db.events.channelInitialized, channel);
 						// resolve promise
@@ -125,8 +131,11 @@ var /* MODULES */
 						Promise.all(thisQueue)
 							.then(function(channel,dbnames) {
 								config.debug && console.log('Success loading '+dbnames+' databases for '+channel[0]);
+								// update status
+								loaded = true;
 								// event notifying the channel db has been loaded
 								eventEmitter.emit(config.db.events.channelLoaded, channel);
+								// resolve promise
 								resolve(channel);
 							})
 							.catch(function(err) {
@@ -212,11 +221,31 @@ var /* MODULES */
 						;
 				});
 			}
-			// Get multiple data from a given channel db for the specified query
-		  , getAll: function getAll(channel, dbType, query) {
-				query = query || {};
+			// Get multiple data for the specified options
+			// options.channel && options.type are mandatory
+		  , getAll: function getAll(options) {
 				return new Promise(function(resolve, reject) {
-					db[channel][dbType].find(query, function (err, docs) {
+					if(!options) {
+						throw 'No options provided';
+					}
+					else if(!options.channel) {
+						throw 'No channel provided';
+					}
+					else if(!options.type) {
+						throw 'No type provided';
+					}
+					options.query = options.query || {};
+					var cursor = db[options.channel][options.type].find(options.query);
+					if(options.sort) {
+						cursor = cursor.sort(options.sort);
+					}
+					if(options.skip) {
+						cursor = cursor.skip(optons.skip);
+					}
+					if(options.limit) {
+						cursor = cursor.limit(options.limit);
+					}
+					cursor.exec(function (err, docs) {
 						if(err) {
 							eventEmitter.emit(config.db.events.getAllError, err);
 							reject(err);
@@ -227,11 +256,31 @@ var /* MODULES */
 					});
 				});
 			}
-			// Get a single data from a given channel db for the specified query
-		  , get: function get(channel, dbType, query) {
-				query = query || {};
+			// Get a single data for the specified options
+			// options.channel && options.type are mandatory
+		  , get: function get(options) {
 				return new Promise(function(resolve, reject) {
-					db[channel][dbType].findOne(query, function (err, doc) {
+					if(!options) {
+						throw 'No options provided';
+					}
+					else if(!options.channel) {
+						throw 'No channel provided';
+					}
+					else if(!options.type) {
+						throw 'No type provided';
+					}
+					options.query = options.query || {};					
+					var cursor = db[options.channel][options.type].findOne(options.query);
+					if(options.sort) {
+						cursor = cursor.sort(options.sort);
+					}
+					if(options.skip) {
+						cursor = cursor.skip(optons.skip);
+					}
+					if(options.limit) {
+						cursor = cursor.limit(options.limit);
+					}
+					cursor.exec(function (err, docs) {
 						if(err) {
 							eventEmitter.emit(config.db.events.getError, err);
 							reject(err);
@@ -242,11 +291,31 @@ var /* MODULES */
 					});
 				});
 			}
-			// Count the number of data from a given channel db for the specified query
-		  , count: function count(channel, dbType, query) {
-				query = query || {};
+			// Count the number of data for the specified options
+			// options.channel && options.type are mandatory
+		  , count: function count(options) {
 				return new Promise(function(resolve, reject) {
-					db[channel][dbType].count(query, function (err, count) {
+					if(!options) {
+						throw 'No options provided';
+					}
+					else if(!options.channel) {
+						throw 'No channel provided';
+					}
+					else if(!options.type) {
+						throw 'No type provided';
+					}
+					options.query = options.query || {};					
+					var cursor = db[options.channel][options.type].count(options.query);
+					if(options.sort) {
+						cursor = cursor.sort(options.sort);
+					}
+					if(options.skip) {
+						cursor = cursor.skip(optons.skip);
+					}
+					if(options.limit) {
+						cursor = cursor.limit(options.limit);
+					}
+					cursor.exec(function (err, count) {
 						if(err) {
 							eventEmitter.emit(config.db.events.countError, err);
 							reject(err);
@@ -310,6 +379,18 @@ var /* MODULES */
 						eventEmitter.emit(config.db.events.removeSuccess, query);
 						resolve(numRemoved);
 					});
+				});
+			}
+			// return current db instances
+		  , getInstances: function getInstances() {
+				return new Promise(function(resolve, reject) {
+					if(!initialized) {
+						throw "DB not initialized";
+					}
+					if(!loaded) {
+						throw "DB not loaded";
+					}
+					resolve(db);
 				});
 			}
 			
