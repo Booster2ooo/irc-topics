@@ -1,6 +1,3 @@
-#!/usr/bin/env node
-
-
 /* TODO NOTES: 
 	- review events emit and promises reject/resolve parameters !
 */
@@ -58,7 +55,7 @@ var /* MODULES */
 						resolve(channel);
 					}
 					catch (err) {
-						config.debug && console.log('Exception initializing '+channel+' databases');
+						config.debug && console.error('Exception initializing '+channel+' databases');
 						// event notifying an error occurred while loading the channel db
 						eventEmitter.emit(config.db.events.channelInitializeError, err, channel);
 						// reject promise;
@@ -97,7 +94,7 @@ var /* MODULES */
 						});
 					}
 					catch(err) {
-						config.debug && console.log('Exception loading '+dbname+channel+' database');
+						config.debug && console.error('Exception loading '+dbname+channel+' database');
 						reject(err);
 					}
 				});
@@ -140,7 +137,7 @@ var /* MODULES */
 							});
 					}
 					catch (err) {
-						config.debug && console.log('Exception loading '+channel+' databases');
+						config.debug && console.error('Exception loading '+channel+' databases');
 						// event notifying an error occurred while loading the channel db
 						eventEmitter.emit(config.db.events.channelLoadError, err, channel);
 						// reject promise;

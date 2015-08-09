@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 var /* MODULES */
 	// load irc module
 	irc = require('irc')
@@ -167,7 +165,7 @@ var /* MODULES */
 								resolve();
 							})
 							.catch(function(err){
-								config.debug && console.log(err);
+								config.debug && console.error(err);
 								reject(err);
 							})
 							;
@@ -247,7 +245,7 @@ var /* MODULES */
 										if(user.allowLog) {
 											// create a new message
 											message = {
-												timestamp: process.hrtime()
+												timestamp: (new Date()).getTime()
 											  , author: nick
 											  , text: textParts.join(' ')
 											};
@@ -274,7 +272,7 @@ var /* MODULES */
 										db.append(channel, 'topics', topic).then();
 									})
 									.catch(function(err) {
-										config.debug && console.log(err);
+										config.debug && console.error(err);
 									})
 									;							
 							}
@@ -282,7 +280,7 @@ var /* MODULES */
 						;
 				}
 			  , errorHandler: function onErrorHanlder(err) {
-					config.debug && console.log(err);
+					config.debug && console.error(err);
 				}
 			  , pingHandler: function pingHandler(server) {
 					config.debug && console.log(server);
@@ -310,7 +308,7 @@ var /* MODULES */
 		config.irc.options.channels.forEach(function(channel) {
 			ircClient.addListener('message'+channel, handlers.messageHandler);
 		});
-		return;
+		return ircClient;
 	}
   ;
   

@@ -41,6 +41,10 @@ var
 			  , encoding: 'UTF-8'
 			}
 		}
+		// www module configuration
+	  , www: {
+			port: 8081
+		}
 		// database module configuration
 	  , db: {
 			// irc/channel related databases

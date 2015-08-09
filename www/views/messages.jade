@@ -1,0 +1,7 @@
+include mixins/message
+
+h2 #{channel} Messages
+div
+	ul
+		each message in messages
+			+msg(message)

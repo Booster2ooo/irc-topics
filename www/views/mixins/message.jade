@@ -1,0 +1,3 @@
+mixin msg(message)
+	li
+		a(class='message', id=message._id)= new Date(message.timestamp).toLocaleString() + ' | ' + message.author + ' > ' + message.text

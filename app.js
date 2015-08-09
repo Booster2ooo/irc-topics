@@ -12,6 +12,8 @@ var
   , events = require('events')
 	// load irc proxy module
   , ircProxy = require('./irc/ircProxy.js')
+	// load www proxy module
+  , wwwProxy = require('./www/wwwProxy.js')
   
 	/* INSTANCES */
   , db = new dbProxy(config)
@@ -22,9 +24,11 @@ db.init()
 	.then(function(chans) {
 		// then launch the irc bot
 		ircProxy(config, db);
+		// and the http server		
+		wwwProxy(config, db);
 	})
 	.catch(function(err) {
-		console.log(err);
+		config.debug && console.error(err);
 	})
 	;
 	

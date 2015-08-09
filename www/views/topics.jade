@@ -1,0 +1,8 @@
+include mixins/topic
+
+
+h2 #{channel} Topics
+div
+	ul
+		each topic in topics
+			+tpc(topic)
