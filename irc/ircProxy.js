@@ -137,7 +137,7 @@ var /* MODULES */
 								break;
 						}
 						//try to retrieve user from db
-						db.get(cmd.channel, 'users', { name: cmd.nick})
+						db.get({ channel: cmd.channel, type: 'users', query: { name: cmd.nick}})
 							.then(function(user) {
 								// user not found, lets create one [review] (use some kind of constructor?)
 								if(!user) {
@@ -151,7 +151,7 @@ var /* MODULES */
 									// apply new state
 									user.allowLog = boolState;
 									// prepare to append to the db
-									return db.append(cmd.channel, 'users', user);
+									return db.append({ channel: cmd.channel, type: 'users', entity: user });
 								}
 								throw "user allow log state unchanged";
 							})
@@ -231,7 +231,7 @@ var /* MODULES */
 							// check if there still is something to log (eg, the @topic was the only word of the message)
 							if(textParts.length) {
 								// check if user exists in the db
-								db.get(channel, 'users', { name: nick})
+								db.get({channel: channel, type: 'users', query:{ name: nick}})
 									.then(function(user) {
 										// if it doesn't, create one with a default allow log as true [review] (use some kind of constructor?)
 										if(!user) {
@@ -239,7 +239,7 @@ var /* MODULES */
 												name: nick
 											  , allowLog: true
 											};
-											db.append(channel, 'users', user).then();
+											db.append({channel: channel, type: 'users', entity: user}).then();
 										}
 										// if the user allows to be logged
 										if(user.allowLog) {
@@ -250,7 +250,7 @@ var /* MODULES */
 											  , text: textParts.join(' ')
 											};
 											// insert the message in the db
-											return db.append(channel, 'messages', message);
+											return db.append({channel: channel, type: 'messages', entity: message});
 										}
 										throw "user doesn't allow log";
 									})
@@ -260,7 +260,7 @@ var /* MODULES */
 										// message inserted, check if a topic is associated
 										if(topic) {
 											// if so, check if the topic already exists in the db
-											return db.get(channel, 'topics', { name: topic.name});
+											return db.get({ channel: channel, type: 'topics', query: { name: topic.name}});
 										}
 										throw "no topic associated with the message";
 									})
@@ -269,7 +269,7 @@ var /* MODULES */
 										// then add the message to the topic
 										topic.messages.push(message._id);
 										// and add it to the db
-										db.append(channel, 'topics', topic).then();
+										db.append({ channel: channel, type: 'topics', entity: topic}).then();
 									})
 									.catch(function(err) {
 										config.debug && console.error(err);

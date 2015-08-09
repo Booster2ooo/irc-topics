@@ -222,7 +222,8 @@ var /* MODULES */
 				});
 			}
 			// Get multiple data for the specified options
-			// options.channel && options.type are mandatory
+			// options.channel 	&& 
+			// options.type 	are mandatory
 		  , getAll: function getAll(options) {
 				return new Promise(function(resolve, reject) {
 					if(!options) {
@@ -247,11 +248,11 @@ var /* MODULES */
 					}
 					cursor.exec(function (err, docs) {
 						if(err) {
-							eventEmitter.emit(config.db.events.getAllError, err);
+							eventEmitter.emit(config.db.events.getAllError, err, options);
 							reject(err);
 							return;
 						}
-						eventEmitter.emit(config.db.events.getAllSuccess, docs);
+						eventEmitter.emit(config.db.events.getAllSuccess, docs, options);
 						resolve(docs);
 					});
 				});
@@ -280,19 +281,20 @@ var /* MODULES */
 					if(options.limit) {
 						cursor = cursor.limit(options.limit);
 					}
-					cursor.exec(function (err, docs) {
+					cursor.exec(function (err, doc) {
 						if(err) {
-							eventEmitter.emit(config.db.events.getError, err);
+							eventEmitter.emit(config.db.events.getError, err, options);
 							reject(err);
 							return;
 						}
-						eventEmitter.emit(config.db.events.getSuccess, doc);
+						eventEmitter.emit(config.db.events.getSuccess, doc, options);
 						resolve(doc);
 					});
 				});
 			}
 			// Count the number of data for the specified options
-			// options.channel && options.type are mandatory
+			// options.channel 	&&
+			// options.type 	are mandatory
 		  , count: function count(options) {
 				return new Promise(function(resolve, reject) {
 					if(!options) {
@@ -317,49 +319,64 @@ var /* MODULES */
 					}
 					cursor.exec(function (err, count) {
 						if(err) {
-							eventEmitter.emit(config.db.events.countError, err);
+							eventEmitter.emit(config.db.events.countError, err, options);
 							reject(err);
 							return;
 						}
-						eventEmitter.emit(config.db.events.countError, count);
+						eventEmitter.emit(config.db.events.countError, count, options);
 						resolve(count);
 					});
 				});
 			}
-			// insert/update the entity into a given channel db
-		  , append: function append(channel, dbType, entity) {
+			// insert/update for the specified options
+			// options.channel	&& 
+			// options.type 	&&
+			// options.entity	are mandatory
+		  , append: function append(options) {
 				return new Promise(function(resolve, reject) {
-					if(!entity._id) {
-						config.debug && console.log('Inserting in '+dbType+channel);
-						config.debug && console.log(entity);
-						db[channel][dbType].insert(entity, function (err) {
+					if(!options) {
+						throw 'No options provided';
+					}
+					else if(!options.channel) {
+						throw 'No channel provided';
+					}
+					else if(!options.type) {
+						throw 'No type provided';
+					}
+					else if(!options.entity) {
+						throw 'No entity provided';
+					}
+					if(!options.entity._id) {
+						config.debug && console.log('Inserting in '+options.type+options.channel);
+						config.debug && console.log(options.entity);
+						db[options.channel][options.type].insert(options.entity, function (err) {
 							if(err) {
 								config.debug && console.log('Insert failed');
-								eventEmitter.emit(config.db.events.appendError, err);
-								eventEmitter.emit(config.db.events.insertError, err);
+								eventEmitter.emit(config.db.events.appendError, err, options);
+								eventEmitter.emit(config.db.events.insertError, err, options);
 								reject(err);
 								return;
 							}
-								config.debug && console.log('Insert success');
-							eventEmitter.emit(config.db.events.appendSuccess, entity);
-							eventEmitter.emit(config.db.events.insertSuccess, entity);
-							resolve(entity);
+							config.debug && console.log('Insert success');
+							eventEmitter.emit(config.db.events.appendSuccess, options.entity, options);
+							eventEmitter.emit(config.db.events.insertSuccess, options.entity, options);
+							resolve(options.entity);
 						});
 					}
 					else {
-						config.debug && console.log('Updating in '+dbType+channel);
+						config.debug && console.log('Updating in '+options.type+options.channel)
 						config.debug && console.log(entity);
-						db[channel][dbType].update({ _id: entity._id }, entity, {}, function (err, numReplaced) {
+						db[options.channel][options.type].update({ _id: options.entity._id }, options.entity, {}, function (err, numReplaced) {
 							if(err) {
 								config.debug && console.log('Update failed');
-								eventEmitter.emit(config.db.events.appendError, err);
-								eventEmitter.emit(config.db.events.updateError, err);
+								eventEmitter.emit(config.db.events.appendError, err, options);
+								eventEmitter.emit(config.db.events.updateError, err, options);
 								reject(err);
 								return;
 							}
 							config.debug && console.log('Update success');
-							eventEmitter.emit(config.db.events.appendSuccess, entity);
-							eventEmitter.emit(config.db.events.updateSuccess, entity);
+							eventEmitter.emit(config.db.events.appendSuccess, options.entity, options);
+							eventEmitter.emit(config.db.events.updateSuccess, options.entity, options);
 							resolve(numReplaced);
 						});
 					}
@@ -370,13 +387,24 @@ var /* MODULES */
 				query = query || {};
 				options = options || {};
 				return new Promise(function(resolve, reject) {
-					db[channel][dbType].remove(query, options, function (err, numRemoved) {
+					if(!options) {
+						throw 'No options provided';
+					}
+					else if(!options.channel) {
+						throw 'No channel provided';
+					}
+					else if(!options.type) {
+						throw 'No type provided';
+					}
+					options.query = options.query || {};
+					options.optons = options.options || {};
+					db[options.channel][options.type].remove(options.query, options.optons, function (err, numRemoved) {
 						if(err) {
-							eventEmitter.emit(config.db.events.removeError, err);
+							eventEmitter.emit(config.db.events.removeError, err, options);
 							reject(err);
 							return;
 						}
-						eventEmitter.emit(config.db.events.removeSuccess, query);
+						eventEmitter.emit(config.db.events.removeSuccess, options);
 						resolve(numRemoved);
 					});
 				});
