@@ -25,15 +25,15 @@ var
 			// define the irc server used by the bot
 			server: 'irc.xolus.net'
 			// define the nickname of the bot
-		  , nick: 'logBotTest'
+		  , nick: 'LogTopic'
 			// define the options for the bot constructor (see https://node-irc.readthedocs.org/en/latest/API.html)
 		  , options: {
-				userName: 'logBotTest'
+				userName: 'LogTopic'
 			  , realName: 'nodeJS LogBot'
 			  , port: 6697
 			  , autoRejoin: true
 			  , autoConnect: true
-			  , channels: ['#testbot','#testbot2']
+			  , channels: ['#n-pn','#hwc']
 			  , secure: true
 			  , selfSigned: true
 			  , certExpired: true
