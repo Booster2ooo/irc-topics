@@ -1,5 +1,0 @@
-{"name":"@testTopic","description":"","messages":["ZEm17Sm5LdRSGNzo"],"_id":"0z0nQ9Rk0VEiBYfa"}
-{"name":"@newTopic","description":"","messages":["ae1nGDAScHvsACKE"],"_id":"FEr1f9ILtRpvpVJv"}
-{"name":"@foobar","description":"","messages":["pvWODYMjGO7JqCNY"],"_id":"Q8QJcllGoVq7M3gA"}
-{"name":"@topic","description":"","messages":["2M8NcsUfRlU7vp7Y"],"_id":"bpB1Eep0dmucHkhG"}
-{"$$indexCreated":{"fieldName":"name","unique":true,"sparse":true}}
