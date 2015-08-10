@@ -5,7 +5,7 @@
 
 var /* MODULES */
 	// load neDB module
-	neDB = require('neDB')
+	neDB = require('nedb')
 	// load events module
   , events = require('events')
 	// load promise module

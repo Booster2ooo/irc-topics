@@ -197,7 +197,7 @@ var /* MODULES */
 		  , handlers = {
 				messageHandler: function messageHandler(nick, text, packet) {
 					var textParts = text.split(' ')
-					  , channel = packet.args[0]
+					  , channel = packet.args[0].toLowerCase()
 					  , topic
 					  , message
 					  ;
@@ -211,72 +211,72 @@ var /* MODULES */
 						return;
 					}
 					// try to find and execute command. if the command failed, continue and log, if it succeeded, stop here
-					tryCommand(channel, nick, textParts)
+					/*tryCommand(channel, nick, textParts)
 						.then(function() {
 							// a command has been found and executed, stop execution here
 							return;
 						})
-						.catch(function() {
+						.catch(function() {*/
 							// no command, continue logging
-							// detect topic
-							if(textParts[textParts.length-1][0] == '@') {
-								// pop out the last word from the textPart array as the topic name [review] (use some kind of constructor?)
-								topic = {
-									name: textParts.pop()
-								  , description: ''
-								  , messages: []
-								};
-							}
-							
-							// check if there still is something to log (eg, the @topic was the only word of the message)
-							if(textParts.length) {
-								// check if user exists in the db
-								db.get({channel: channel, type: 'users', query:{ name: nick}})
-									.then(function(user) {
-										// if it doesn't, create one with a default allow log as true [review] (use some kind of constructor?)
-										if(!user) {
-											user = {
-												name: nick
-											  , allowLog: true
-											};
-											db.append({channel: channel, type: 'users', entity: user}).then();
-										}
-										// if the user allows to be logged
-										if(user.allowLog) {
-											// create a new message
-											message = {
-												timestamp: (new Date()).getTime()
-											  , author: nick
-											  , text: textParts.join(' ')
-											};
-											// insert the message in the db
-											return db.append({channel: channel, type: 'messages', entity: message});
-										}
-										throw "user doesn't allow log";
-									})
-									.then(function(msg) {
-										// replace in memory message by the one in db
-										message = msg;
-										// message inserted, check if a topic is associated
-										if(topic) {
-											// if so, check if the topic already exists in the db
-											return db.get({ channel: channel, type: 'topics', query: { name: topic.name}});
-										}
-										throw "no topic associated with the message";
-									})
-									.then(function(top) {
-										topic = top || topic;
-										// then add the message to the topic
-										topic.messages.push(message._id);
-										// and add it to the db
-										db.append({ channel: channel, type: 'topics', entity: topic}).then();
-									})
-									.catch(function(err) {
-										config.debug && console.error(err);
-									})
-									;							
-							}
-						})
+						// detect topic
+						if(textParts[textParts.length-1][0] == '@') {
+							// pop out the last word from the textPart array as the topic name [review] (use some kind of constructor?)
+							topic = {
+								name: textParts.pop()
+							  , description: ''
+							  , messages: []
+							};
+						}
+						
+						// check if there still is something to log (eg, the @topic was the only word of the message)
+						if(textParts.length) {
+							// check if user exists in the db
+							db.get({channel: channel, type: 'users', query:{ name: nick}})
+								.then(function(user) {
+									// if it doesn't, create one with a default allow log as true [review] (use some kind of constructor?)
+									if(!user) {
+										user = {
+											name: nick
+										  , allowLog: true
+										};
+										db.append({channel: channel, type: 'users', entity: user}).then();
+									}
+									// if the user allows to be logged
+									if(user.allowLog) {
+										// create a new message
+										message = {
+											timestamp: (new Date()).getTime()
+										  , author: nick
+										  , text: textParts.join(' ')
+										};
+										// insert the message in the db
+										return db.append({channel: channel, type: 'messages', entity: message});
+									}
+									throw "user doesn't allow log";
+								})
+								.then(function(msg) {
+									// replace in memory message by the one in db
+									message = msg;
+									// message inserted, check if a topic is associated
+									if(topic) {
+										// if so, check if the topic already exists in the db
+										return db.get({ channel: channel, type: 'topics', query: { name: topic.name}});
+									}
+									throw "no topic associated with the message";
+								})
+								.then(function(top) {
+									topic = top || topic;
+									// then add the message to the topic
+									topic.messages.push(message._id);
+									// and add it to the db
+									db.append({ channel: channel, type: 'topics', entity: topic}).then();
+								})
+								.catch(function(err) {
+									config.debug && console.error(err);
+								})
+								;							
+						}
+						//})
 						;
 				}
 			  , errorHandler: function onErrorHanlder(err) {
@@ -292,9 +292,9 @@ var /* MODULES */
 					config.debug && console.log("IRC connection closed");
 				}
 			  , joinHandler: function joinHandler(channel, nick, message) {
-					if(nick == config.irc.nick) {
+					/*if(nick == config.irc.nick) {
 						ircClient.say(channel,greetings);
-					}
+					}*/
 				}
 			}
 		  ;

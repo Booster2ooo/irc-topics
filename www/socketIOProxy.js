@@ -20,20 +20,22 @@ var /* MODULES */
 				}
 				// when an entity has been inserted in the db
 			  , onEntityInserted: function (entity, options) {
-					www.renderer(options.type+'_entity', { entity: entity })
-						.then(function(view) {
-							io.in(options.channel).emit(
-								'new_data'
-							  , {
-									channel: options.channel
-								  , type: options.type
-								  , view: view
-								}
-							);
-						})
-						.catch(function(err) {
-							config.debug && console.error(err);
-						});
+					if(options.type !== 'users') {
+						www.renderer(options.type+'_entity', { entity: entity })
+							.then(function(view) {
+								io.in(options.channel).emit(
+									'new_data'
+								  , {
+										channel: options.channel
+									  , type: options.type
+									  , view: view
+									}
+								);
+							})
+							.catch(function(err) {
+								config.debug && console.error(err);
+							});
+					}
 				}
 
 			}

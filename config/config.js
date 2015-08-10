@@ -33,7 +33,7 @@ var
 			  , port: 6697
 			  , autoRejoin: true
 			  , autoConnect: true
-			  , channels: ['#n-pn','#hwc']
+			  , channels: ['#n-pn']
 			  , secure: true
 			  , selfSigned: true
 			  , certExpired: true
