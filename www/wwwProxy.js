@@ -14,7 +14,7 @@ var /* MODULES */
 	// body parser module
   , bodyParser = require('body-parser')
 	// custom routes modules
-  , routes = require('./routes/main.js')
+  , routes = require('./routes/index.js')
 	// socketIO proxy
   , socketIOProxy = require('./socketIOProxy.js')
   
@@ -62,9 +62,24 @@ var /* MODULES */
 					config.debug && console.log('HTTP Listening on ' + bind);
 				}
 			}
-
+			/* RENDERER */
+		  , renderer = function renderer(viewName, viewData) {
+				return new Promise(function(resolve, reject){
+					app.render(
+						viewName
+					  , viewData
+					  , function(err, html) {
+							if (err) {
+								reject(err);
+								return;
+							}
+							resolve(html);
+					  }
+					);
+				});
+			}
   
-		  /* INSTANCES */
+			/* INSTANCES */
 		  , router = routes(config, db)
 			/* VARIABLES */
 			// express application
@@ -99,10 +114,15 @@ var /* MODULES */
 				.listen(config.www.port)
 				.on('error', handlers.httpErrorHandler)
 				.on('listening', handlers.httpListeningHandler)
+		  , www = {
+				app: app
+			  , server: server
+			  , renderer: renderer
+			}
 			// SocketIO
-		  , io = socketIOProxy(config, db, app, server)
+		  , io = socketIOProxy(config, db, www)
 		  ;
-		return app;
+		return www;
 	}
   ;
   

@@ -130,7 +130,7 @@ var /* MODULES */
 						}
 						Promise.all(thisQueue)
 							.then(function(channel,dbnames) {
-								config.debug && console.log('Success loading '+dbnames+' databases for '+channel[0]);
+								config.debug && console.log('Success loading databases for '+channel[0]);
 								// update status
 								loaded = true;
 								// event notifying the channel db has been loaded
