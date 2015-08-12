@@ -365,7 +365,7 @@ var /* MODULES */
 					}
 					else {
 						config.debug && console.log('Updating in '+options.type+options.channel)
-						config.debug && console.log(entity);
+						config.debug && console.log(options.entity);
 						db[options.channel][options.type].update({ _id: options.entity._id }, options.entity, {}, function (err, numReplaced) {
 							if(err) {
 								config.debug && console.log('Update failed');
@@ -383,9 +383,7 @@ var /* MODULES */
 				});
 			}
 			// delete one or more data entries from a give channel db for specified query & options
-		  , remove: function remove(channel, dbType, query, options) {
-				query = query || {};
-				options = options || {};
+		  , remove: function remove(options) {
 				return new Promise(function(resolve, reject) {
 					if(!options) {
 						throw 'No options provided';
@@ -396,9 +394,11 @@ var /* MODULES */
 					else if(!options.type) {
 						throw 'No type provided';
 					}
-					options.query = options.query || {};
-					options.optons = options.options || {};
-					db[options.channel][options.type].remove(options.query, options.optons, function (err, numRemoved) {
+					else if(!options.query) {
+						throw 'No query provided';
+					}
+					options.options = options.options || {};
+					db[options.channel][options.type].remove(options.query, options.options, function (err, numRemoved) {
 						if(err) {
 							eventEmitter.emit(config.db.events.removeError, err, options);
 							reject(err);

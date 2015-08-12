@@ -1,3 +1,8 @@
 mixin msg(message)
 	li
-		a(class='message', id=message._id)= new Date(message.timestamp).toLocaleString() + ' | ' + message.author + ' > ' + message.text
+		span(class='message js-message-item', id=message._id, draggable='true')
+			span(class='message-date')= new Date(message.timestamp).toLocaleString('fr-FR', { day: "2-digit", year: "numeric", month:  "2-digit", hour:  "2-digit", minute:  "2-digit", second:  "2-digit" })
+			span &nbsp; | &nbsp; 
+			span(class='message-author')= message.author 
+			span &nbsp; >&nbsp;
+			span(class='message-text')= message.text

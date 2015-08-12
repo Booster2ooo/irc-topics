@@ -2,14 +2,15 @@ extends layout/master
 
 block content
 	div(class='row', id='header')
-		div(class='col-md-12')
+		div(class='col-md-2')
 			h1= title
-			p Welcome to #{title}
-	div(class='row')
-		div(class='col-md-2', id='channels-container')
+			p Welcome to #{title}		
+		div(class='col-md-10', id='channels-container')
 			include channels.jade
+	div(class='row')
 		div(class='col-md-2', id='topics-container')
 			//- include topics.jade
-		div(class='col-md-8', id='messages-container')
+		div(class='col-md-10', id='messages-container')
 			//- include messages.jade
 	input(type='hidden', name='current_channel', id='current_channel', value=channel)
+	include modals/addTopic.jade

@@ -1,11 +1,60 @@
+@import "bootstrap3/variables.less";
+@gutter: 15px;
+@border-size: 1px;
+@border-style: dashed;
+@active-color: lighten(@brand-info, 30%);
+
 * {
 	margin: 0;
 	padding: 0;
 }
 
-a {
-	cursor: pointer;
+#header {
+	background-color: @brand-primary;
+	color: white;
+	padding-bottom: @gutter;
 }
+
+#js-topic-add {
+	margin: @gutter 0px @gutter 0px;
+}
+
+.topic {
+	width: 100%;
+	cursor: pointer;	
+	border-left: @border-size @border-style @brand-primary;
+	margin-bottom: @gutter;
+	padding: (@gutter / 3);
+	&:hover {
+		background-color: @active-color;
+	}
+	span {
+		color: @brand-primary;
+	}
+	div {
+		padding-left: @font-size-base;
+	}
+}
+
+.message {
+	cursor: move;
+	color: @brand-primary;
+	&:hover {
+		background-color: @active-color;
+	}
+	.message-date {
+		color: @gray-light;
+	}
+	.message-author {
+		color: @brand-info;
+	}
+}
+
+.drag-start, .drag-enter {
+	border: @border-size @border-style @brand-info;
+	background-color: @active-color;
+}
+
 ul {
 	list-style-type: none;
 }

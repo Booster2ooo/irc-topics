@@ -10,23 +10,34 @@
 				});
 			
 			µC.$body
-				.on('click', µS.btnSelectChannel, function(e) {
-					e.preventDefault();
+				.on('click', µS.btnItemChannel, function(e) {
+					e.preventDefault && e.preventDefault();
 					var channelId = $(this).attr('id');
 					framework.socket.selectChannel(channelId);
 					return false;
 				})			
-				.on('click', µS.btnSelectTopic, function(e) {
-					e.preventDefault();
+				.on('click', µS.btnItemTopic, function(e) {
+					e.preventDefault && e.preventDefault();
 					var topicId = $(this).attr('id');
 					framework.socket.selectTopic(topicId);
 					return false;
 				})
+				.on('click', µS.btnAddTopic, function(e) {
+					e.preventDefault && e.preventDefault();
+					framework.uifx.addTopic($(this));
+					return false;
+				})
+				.on('dragstart', µS.btnItemMessage, framework.uifx.dragStartHandler)
+				.on('dragend', µS.btnItemMessage, framework.uifx.dragEndHandler)
+				.on('dragover', µS.btnItemTopic + ':not(#topic-none)', framework.uifx.dragOverHandler)
+				.on('dragenter', µS.btnItemTopic + ':not(#topic-none)', framework.uifx.dragEnterHandler)
+				.on('dragleave', µS.btnItemTopic + ':not(#topic-none)', framework.uifx.dragLeaveHandler)
+				.on('drop', µS.btnItemTopic + ':not(#topic-none)', framework.uifx.dropHandler)
 				;
 				
 			µC.socket
 				.on('connect', function () {
-					µC.currentChannel = µC.$currentChannel.val();						
+					µC.currentChannel = µC.$currentChannel.val();				
 					framework.socket.selectChannel(µC.currentChannel);
 				})
 				.on('joined', function(packet) {

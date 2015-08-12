@@ -15,12 +15,17 @@ var /* MODULES */
 				// socket connected handler
 				onConnectionHanlder: function onConnectionHanlder(socket) {
 					config.debug && console.log('socket IO client connected');
-					connectionStatus = true;
-					clienthandlers.bindSelectChannel(socket);
+					clienthandlers
+						.bindOnError(socket)
+						.bindSelectChannel(socket)
+						.bindSelectTopic(socket)
+						.bindAddMessageToTopic(socket)
+						.bindAddTopic(socket)
+						;
 				}
 				// when an entity has been inserted in the db
 			  , onEntityInserted: function (entity, options) {
-					if(options.type !== 'users') {
+					if(options.type !== 'users' && options.type !== 'regexp' ) {
 						www.renderer(options.type+'_entity', { entity: entity })
 							.then(function(view) {
 								io.in(options.channel).emit(
@@ -40,7 +45,13 @@ var /* MODULES */
 
 			}
 		  , clienthandlers = {
-				bindSelectChannel: function bindSelectChannel(socket) {
+				bindOnError: function bindOnError(socket) {
+					socket.on('error', function(err) {
+						config.debug && console.error(err);
+					});
+					return clienthandlers;
+				}
+			  , bindSelectChannel: function bindSelectChannel(socket) {
 					socket.on('selectChannel', function(packet) {
 						if(packet.channel) {
 							var topicRenderPromise =  new Promise(function(resolve, reject) {
@@ -63,7 +74,7 @@ var /* MODULES */
 									db.getAll({ 
 										channel: packet.channel
 									  , type: 'messages'
-									  , sort: { timestamp: 1 }
+									  , sort: { timestamp: -1 }
 									})
 									.then(function(docs) {
 										return www.renderer('messages' , { channel: packet.channel, messages: docs});
@@ -88,15 +99,15 @@ var /* MODULES */
 									socket.leave(room);
 								}
 							});
-							if(!joined) {
+							if(!joined || packet.force) {
 								socket.join(packet.channel);							
 								socket.emit('joined', {
 									channel: packet.channel
 								});
 								Promise.all([topicRenderPromise, messagesRenderPromise])
 									.then(function(views) {
-										topicsView = views[0] || [];
-										messagesView = views[1] || [];
+										topicsView = views[0] || '';
+										messagesView = views[1] || '';
 										// seems to be trigger to times on the client side ? oO [review]
 										socket.emit('load_data', {
 											channel: packet.channel
@@ -115,26 +126,124 @@ var /* MODULES */
 							}
 						}
 					});
+					return clienthandlers;
 				}
-			  , bindSelectTopic: function bindSelectChannel(socket) {
-				  
+			  , bindSelectTopic: function bindSelectTopic(socket) {
+					socket.on('selectTopic', function(packet) {
+						if(packet.channel && packet.topic) {
+							var messagesRenderPromise =  new Promise(function(resolve, reject) {
+									db.get({
+										channel: packet.channel
+									  , type: 'topics'
+									  , query: { _id: packet.topic }
+									})
+									.then(function(topic) {
+										if(!topic) throw 'topic not found';
+										return db.getAll({ 
+											channel: packet.channel
+										  , type: 'messages'
+										  , query: { _id: { $in: topic.messages } }
+										  , sort: { timestamp: -1 }
+										});
+									})									
+									.then(function(docs) {
+										return www.renderer('messages' , { channel: packet.channel, messages: docs});
+									})
+									.then(function(html) {
+										resolve(html);
+									})
+									.catch(function (err) {
+										reject(err);
+									});
+								})
+							  , messagesView
+							  ;
+							
+							messagesRenderPromise
+								.then(function(view) {
+									messagesView = view || '';
+									socket.emit('load_data', {
+										channel: packet.channel
+									  , type: 'messages'
+									  , view: view
+									});
+								})
+								.catch(function(err) {
+									config.debug && console.error(err);
+								});
+						}
+					});
+					return clienthandlers;
+				}
+			  , bindAddMessageToTopic: function bindSelectTopic(socket) {
+					socket.on('addMessageToTopic', function(packet) {
+						if(packet.channel && packet.topic && packet.message) {							
+							db.get({
+								channel: packet.channel
+							  , type: 'topics'
+							  , query: { _id: packet.topic }
+							})
+							.then(function(topic) {
+								if(!topic) throw 'topic not found';
+								if(topic.messages && topic.messages.length && topic.messages.indexOf(packet.message) != -1)  throw 'message already in topic';
+								topic.messages.push(packet.message);
+								return db.append({ 
+									channel: packet.channel
+								  , type: 'topics'
+								  , entity: topic
+								});
+							})	
+							.then(function(html) {
+								config.debug && console.log('new message added to topic');
+							})
+							.catch(function (err) {
+								config.debug && console.error(err);
+							});
+						}
+					});
+					return clienthandlers;
+				}
+			  , bindAddTopic: function bindAddTopic(socket) {
+					socket.on('addTopic', function(packet) {
+						if(packet.channel && packet.topic && packet.topic.name) {
+							packet.topic.messages = [];
+							db.get({
+								channel: packet.channel
+							  , type: 'topics'
+							  , query: { name: packet.topic.name }
+							})
+							.then(function(topic) {
+								if(topic) throw 'topic already exists';
+								return db.append({ 
+									channel: packet.channel
+								  , type: 'topics'
+								  , entity: packet.topic
+								});
+							})	
+							.then(function(html) {
+								config.debug && console.log('new topic added');
+							})
+							.catch(function (err) {
+								config.debug && console.error(err);
+							});
+						}
+					});
+					return clienthandlers;
 				}
 			}
 			/* FUNCTIONS */
 			// create a socketIO channel for each IRC channel
-		  , joinChannels = function joinChannels(socket) {
+		/*  , joinChannels = function joinChannels(socket) {
 				config.irc.options.channels.forEach(function(channel) {
 					config.debug && console.log('socket IO client joined ' + channel);
 					socket.join(channel);
 				});
 			}
+		*/
 			// emit data received from IRC to the HTTP client
 		  , dataEmitter = function dataEmitter() {
 				db.onInsert(handlers.onEntityInserted);
 			}
-			/* VARIABLES */
-			// track whenever the socket is connected
-		  , connectionStatus = false
 			/* INSTANCES */
 		  , io = socketIO(www.server)
 		  ;
