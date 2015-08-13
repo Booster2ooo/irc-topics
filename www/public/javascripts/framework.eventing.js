@@ -7,9 +7,13 @@
 			µC.$document
 				.ready(function() {
 					µC.currentChannel = µC.$currentChannel.val();
+					µC.$tooltips.tooltip();
 				});
 			
 			µC.$body
+				
+				.bind('dragover', framework.uifx.dragHandler)
+				
 				.on('click', µS.btnItemChannel, function(e) {
 					e.preventDefault && e.preventDefault();
 					var channelId = $(this).attr('id');
@@ -27,8 +31,13 @@
 					framework.uifx.addTopic($(this));
 					return false;
 				})
-				.on('dragstart', µS.btnItemMessage, framework.uifx.dragStartHandler)
-				.on('dragend', µS.btnItemMessage, framework.uifx.dragEndHandler)
+				.on('click', µS.btnItemMessage, function(e) {
+					e.preventDefault && e.preventDefault();
+					framework.uifx.toggleMessageSelection($(this));
+					return false;					
+				})
+				.on('dragstart', µS.btnItemMessage+'.selected', framework.uifx.dragStartHandler)
+				.on('dragend', µS.btnItemMessage+'.selected', framework.uifx.dragEndHandler)
 				.on('dragover', µS.btnItemTopic + ':not(#topic-none)', framework.uifx.dragOverHandler)
 				.on('dragenter', µS.btnItemTopic + ':not(#topic-none)', framework.uifx.dragEnterHandler)
 				.on('dragleave', µS.btnItemTopic + ':not(#topic-none)', framework.uifx.dragLeaveHandler)

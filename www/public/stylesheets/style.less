@@ -37,7 +37,8 @@
 }
 
 .message {
-	cursor: move;
+	width: 100%;
+	cursor: pointer;
 	color: @brand-primary;
 	&:hover {
 		background-color: @active-color;
@@ -47,6 +48,10 @@
 	}
 	.message-author {
 		color: @brand-info;
+	}
+	&.selected {
+		cursor: move;
+		background-color: @active-color;
 	}
 }
 

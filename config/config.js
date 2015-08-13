@@ -55,6 +55,8 @@ var
 			  , messages: './data/db/messages'
 				// topics databases file prefix (#chan will be appended at the end to identify each channel)
 			  , topics: './data/db/topics'
+				// regexp databases file prefix
+			  , regexp: './data/db/regexp'
 			}
 			// events signature
 		  , events: {

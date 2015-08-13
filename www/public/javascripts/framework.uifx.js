@@ -9,7 +9,14 @@
 			µC['$' + packet.type + 'Stack'] = $container.find('ul');
 		}
 	  , appendContent: function pushContent(packet) {
-			var $stack = µC['$' + packet.type + 'Stack'];
+			var $stack = µC['$' + packet.type + 'Stack']
+			  , currentTopic = µC.$currentTopic.val()
+			  , isMessage = new RegExp(µS.btnItemMessage.slice(1),'g')
+			  ;
+			if(currentTopic && isMessage.test(packet.view)) {
+				// if a topic is selected and the view is a message, do not append the message to the stack
+				return;
+			}
 			$stack.prepend(packet.view);
 		}
 	  , addTopic: function addTopic($el) {
@@ -32,14 +39,48 @@
 			$description.val('');
 			$modal.modal('hide');
 		}
+	  , toggleMessageSelection: function toggleMessageSelection($el) {
+			$el.toggleClass('selected');
+		}
+	  , dragHandler: function dragHandler(e) {
+		    µC.needScrolling = false;
+			var mouseY = e.originalEvent.clientY
+			  , scrollZoneTop = 50
+			  , scrollZoneBottom = µC.$window.height() - scrollZoneTop
+			  , currentScroll = $(window).scrollTop()
+			  , scrollPage = function scrollPage(scrollValue) {
+					currentScroll = $(window).scrollTop();
+					µC.$window.scrollTop(currentScroll + scrollValue);
+					if(µC.needScrolling) {
+						setTimeout(function() { 
+							scrollPage(scrollValue)
+						} , 10);
+					}
+				}
+			  ;
+			if(mouseY < scrollZoneTop) {
+				µC.needScrolling = true;
+				scrollPage(-1);
+			}
+			else if(mouseY > scrollZoneBottom) {
+				µC.needScrolling = true;
+				scrollPage(1);
+			}
+			else {
+				µC.needScrolling = false;
+			}
+		}
 	  , dragStartHandler: function dragStartHandler(e) {
-			framework.cache.dragSrc = this;
-			$(framework.cache.dragSrc).addClass('drag-start');
+			var $selectedMessages = $(µS.btnItemMessage+'.selected');
+			$selectedMessages.addClass('drag-start');
 			e.dataTransfer.effectAllowed = 'move';
-			e.dataTransfer.setData('text/plain', this.getAttribute('id'));
+			e.dataTransfer.setData('text/plain', '');
 		}
 	  , dragEndHandler: function dragEndHandler(e) {
-			$(this).removeClass('drag-start');
+			var $selectedMessages = $(µS.btnItemMessage+'.selected');
+			$selectedMessages.removeClass('drag-start');
+			e.dataTransfer.clearData();
+			µC.needScrolling = false;
 		}
 	  , dragOverHandler: function dragOverHandler(e) {
 			e.preventDefault && e.preventDefault();
@@ -48,9 +89,7 @@
 			return false;
 		}
 	  , dragEnterHandler: function dragEnterHandler(e) {
-			//e.preventDefault && e.preventDefault();
 			$(this).addClass('drag-enter');
-			//return false;
 		}
 	  , dragLeaveHandler: function dragLeaveHandler(e) {
 			$(this).removeClass('drag-enter');
@@ -58,15 +97,21 @@
 	  , dropHandler: function dropHandler(e) {
 			e.preventDefault && e.preventDefault();
 			e.stopPropagation && e.stopPropagation();
-			var topicId = this.getAttribute('id')
-			  , messageId = e.dataTransfer.getData('text/plain')
+			var $selectedMessages = $(µS.btnItemMessage+'.selected')
+			  , topicId = this.getAttribute('id')
 			  , options = {
 					topic: topicId
-				  , message: messageId
+				  , messages: []
 				}
 			  ;
 			$(this).removeClass('drag-enter');
-			$(framework.cache.dragSrc).removeClass('drag-start');
+			$selectedMessages
+				.each(function() {
+					var $message = $(this);
+					options.messages.push($message.attr('id'));
+				})
+				.removeClass('drag-start')
+				.removeClass('selected');
 			framework.socket.addMessageToTopic(options);
 			e.dataTransfer.clearData();
 			return false;

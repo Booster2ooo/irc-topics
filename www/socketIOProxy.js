@@ -177,7 +177,7 @@ var /* MODULES */
 				}
 			  , bindAddMessageToTopic: function bindSelectTopic(socket) {
 					socket.on('addMessageToTopic', function(packet) {
-						if(packet.channel && packet.topic && packet.message) {							
+						if(packet.channel && packet.topic && packet.messages && packet.messages.length) {							
 							db.get({
 								channel: packet.channel
 							  , type: 'topics'
@@ -185,8 +185,14 @@ var /* MODULES */
 							})
 							.then(function(topic) {
 								if(!topic) throw 'topic not found';
-								if(topic.messages && topic.messages.length && topic.messages.indexOf(packet.message) != -1)  throw 'message already in topic';
-								topic.messages.push(packet.message);
+								if(!topic.messages) {
+									topic.messages = [];
+								}
+								packet.messages.forEach(function(message){
+									if(!topic.messages.length || topic.messages.indexOf(message) == -1) {
+										topic.messages.push(message);
+									}
+								});
 								return db.append({ 
 									channel: packet.channel
 								  , type: 'topics'

@@ -303,11 +303,11 @@ var /* MODULES */
 						  , type: 'regexp'
 						})
 						.then(function(regexps) {
-							if(!regexps) {
+							if(!regexps || !regexps.length) {
 								ircClient.say(cmd.nick, 'No regular expressions found for ' + cmd.channel);
 							}
 							else {
-								ircClient.say(cmd.nick, 'List of regular expressions foudn for ' + cmd.channel);
+								ircClient.say(cmd.nick, 'List of regular expressions found for ' + cmd.channel);
 								regexps.forEach(function(line) {
 									ircClient.say(cmd.nick, 'id: ' + line._id + ' | expression:' + line.expression + ' | flags: '+ line.flags + ' | topic: ' + line.topic);
 								});

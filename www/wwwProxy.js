@@ -18,6 +18,8 @@ var /* MODULES */
 	// socketIO proxy
   , socketIOProxy = require('./socketIOProxy.js')
   
+  , dateIntl = new Intl.DateTimeFormat('fr-FR', { day: "2-digit", year: "numeric", month:  "2-digit", hour:  "2-digit", minute:  "2-digit", second:  "2-digit" })
+  
   , wwwProxy = function wwwProxy(config, db) {
 		// check whenever a configuration has been passed
 		if(!config) throw 'WWW proxy: configuration not found';
@@ -64,6 +66,7 @@ var /* MODULES */
 			}
 			/* RENDERER */
 		  , renderer = function renderer(viewName, viewData) {
+				viewData.dateIntl = dateIntl;
 				return new Promise(function(resolve, reject){
 					app.render(
 						viewName

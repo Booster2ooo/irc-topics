@@ -26,9 +26,11 @@
 			if(packet.topic && packet.channel) {
 				if(packet.topic == 'topic-none') {
 					framework.socket.selectChannel(µC.currentChannel, true);
+					µC.$currentTopic.val('');
 					return;
 				}
 				µC.socket.emit('selectTopic', packet);
+				µC.$currentTopic.val(topicId);
 			}
 		}
 	  , addTopic: function addTopic(topic) {
@@ -42,7 +44,7 @@
 		}
 	  , addMessageToTopic: function addMessageToTopic(options) {
 			var packet = $.extend(options, { channel: µC.currentChannel });
-			if(packet.topic && packet.message && packet.channel) {
+			if(packet.topic && packet.messages &&  packet.messages.length && packet.channel) {
 				µC.socket.emit('addMessageToTopic', packet);
 			}
 		}

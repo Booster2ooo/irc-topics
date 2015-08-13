@@ -7,18 +7,20 @@
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	framework.options = {
 		selectors: {
-			currentChannel:		'#current_channel'
-		  , header:				'#header'
+			header:				'#header'
+		  , tooltips:			'[data-toggle="tooltip"]'
 		  
+		  , currentChannel:		'#current_channel'
 		  , channelsContainer:	'#channels-container'
-		  , btnItemChannel:		'.js-channel-item'		  
+		  , btnItemChannel:		'.js-channel-item'
 		  
+		  , currentTopic:		'#current_topic'
 		  , topicsContainer:	'#topics-container'
 		  , btnAddTopic:		'.js-topic-add'
 		  , btnItemTopic:		'.js-topic-item'
 		  
 		  
-		  , messagesContainer:	'#messages-container'		  
+		  , messagesContainer:	'#messages-container'
 		  , btnItemMessage:		'.js-message-item'
 		}
 	}
