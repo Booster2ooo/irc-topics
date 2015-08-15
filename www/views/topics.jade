@@ -1,15 +1,8 @@
 include mixins/topic
 
-
-h2(id='topics-header') #{channel} Topics
-button(class='btn btn-default btn-sm btn-block', id='js-topic-add', data-toggle='modal', data-target='#addTopicModal')
-	span(class='glyphicon glyphicon-plus')
-	span  Add topic
-div
-	ul
-		li
-			div(class='topic js-topic-item', id="topic-none", href='#')
-				span @noTopic
-				div Go back to channel messages
-		each topic in topics
-			+tpc(topic)
+li
+	div(class='topic js-topic-item', id="topic-none", href='#')
+		span @noTopic
+		div Go back to channel messages
+each topic in topics
+	+tpc(topic)

@@ -1,11 +1,4 @@
 include mixins/channel
 
-
-h2(id='channels-header') Channels
-div(class='dropdown')
-	button(class='btn btn-default btn-block btn-sm dropdown-toggle', type='button', id='dropdownChannels', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false') Channel selection
-		span &nbsp;
-		span(class='caret')
-	ul(class='dropdown-menu', aria-labelledby='dropdownChannels')
-		each channel in channels
-			+chan(channel)
+each channel in channels
+	+chan(channel)

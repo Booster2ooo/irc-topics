@@ -8,10 +8,11 @@
 				.ready(function() {
 					µC.currentChannel = µC.$currentChannel.val();
 					µC.$tooltips.tooltip();
-				});
+				})				
+				.bind('scroll', framework.uifx.scrollHandler)
+				;
 			
 			µC.$body
-				
 				.bind('dragover', framework.uifx.dragHandler)
 				
 				.on('click', µS.btnItemChannel, function(e) {

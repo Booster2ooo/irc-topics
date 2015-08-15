@@ -1,7 +1,4 @@
 include mixins/message
 
-h2(id='messages-header') #{channel} Messages
-div
-	ul
-		each message in messages
-			+msg(message)
+each message in messages
+	+msg(message)

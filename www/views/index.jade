@@ -7,11 +7,26 @@ block content
 			p Welcome to #{title} &nbsp;
 				span(class='glyphicon glyphicon-info-sign',data-toggle='tooltip', data-placement='bottom', title='Click to select messages then drag&drop them to the desired topic')
 		div(class='col-md-10', id='channels-container')
-			include channels.jade
+			h2(id='channels-header') Channels
+			div(class='dropdown')
+				button(class='btn btn-default btn-block btn-sm dropdown-toggle', type='button', id='dropdownChannels', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false') Channel selection
+					span &nbsp;
+					span(class='caret')
+				ul(class='dropdown-menu', aria-labelledby='dropdownChannels')
+					include channels.jade
 	div(class='row')
 		div(class='col-md-2', id='topics-container')
+			h2(id='topics-header') #{channel} Topics
+			button(class='btn btn-default btn-sm btn-block', id='js-topic-add', data-toggle='modal', data-target='#addTopicModal')
+				span(class='glyphicon glyphicon-plus')
+				span  Add topic
+			div
+				ul
 			//- include topics.jade
 		div(class='col-md-10', id='messages-container')
+			h2(id='messages-header') #{channel} Messages
+			div
+				ul
 			//- include messages.jade
 	input(type='hidden', name='current_channel', id='current_channel', value=channel)
 	input(type='hidden', name='current_topic', id='current_topic', value='')

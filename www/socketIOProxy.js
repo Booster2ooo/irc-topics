@@ -21,6 +21,7 @@ var /* MODULES */
 						.bindSelectTopic(socket)
 						.bindAddMessageToTopic(socket)
 						.bindAddTopic(socket)
+						.bindLoadMoreMessages(socket)
 						;
 				}
 				// when an entity has been inserted in the db
@@ -75,6 +76,7 @@ var /* MODULES */
 										channel: packet.channel
 									  , type: 'messages'
 									  , sort: { timestamp: -1 }
+									  , limit: 500
 									})
 									.then(function(docs) {
 										return www.renderer('messages' , { channel: packet.channel, messages: docs});
@@ -144,6 +146,7 @@ var /* MODULES */
 										  , type: 'messages'
 										  , query: { _id: { $in: topic.messages } }
 										  , sort: { timestamp: -1 }
+										  , limit: 500
 										});
 									})									
 									.then(function(docs) {
@@ -236,6 +239,60 @@ var /* MODULES */
 					});
 					return clienthandlers;
 				}
+			  , bindLoadMoreMessages: function bindLoadMoreMessages(socket) {
+					socket.on('loadMoreMessages', function(packet) {
+						if(packet.channel && packet.step) {
+							var messagesRenderPromise =  new Promise(function(resolve, reject) {
+									var getTopicPromise = packet.topic ?
+											db.get({
+												channel: packet.channel
+											  , type: 'topics'
+											  , query: { _id: packet.topic }
+											})
+										  :  new Promise(function(resolve, reject) { resolve(); })
+										;
+									getTopicPromise
+										.then(function(topic) {
+											var query = topic ? { _id: { $in: topic.messages } } : {};
+											return db.getAll({ 
+												channel: packet.channel
+											  , type: 'messages'
+											  , query: query
+											  , sort: { timestamp: -1 }
+											  , skip: 500 * (packet.step-1)
+											  , limit: 500
+											});
+										})									
+										.then(function(docs) {
+											return www.renderer('messages' , { channel: packet.channel, messages: docs});
+										})
+										.then(function(html) {
+											resolve(html);
+										})
+										.catch(function (err) {
+											reject(err);
+										});
+								})
+							  , messagesView
+							  ;
+							
+							messagesRenderPromise
+								.then(function(view) {
+									messagesView = view || '';
+									socket.emit('load_data', {
+										channel: packet.channel
+									  , type: 'messages'
+									  , view: view
+									});
+								})
+								.catch(function(err) {
+									config.debug && console.error(err);
+								});
+						}
+					});
+					return clienthandlers;
+				}
+			  
 			}
 			/* FUNCTIONS */
 			// create a socketIO channel for each IRC channel

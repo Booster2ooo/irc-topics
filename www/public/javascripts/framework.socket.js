@@ -14,6 +14,7 @@
 			  , force: force
 			};
 			if(packet.channel) {
+				framework.uifx.cleanStacks(['topics', 'messages']);
 				µC.socket.emit('selectChannel', packet);
 			}
 		}
@@ -23,14 +24,27 @@
 			  , topic: topicId
 			};
 			
-			if(packet.topic && packet.channel) {
+			if(packet.topic && packet.channel) {				
+				framework.uifx.cleanStacks(['messages']);
 				if(packet.topic == 'topic-none') {
 					framework.socket.selectChannel(µC.currentChannel, true);
 					µC.$currentTopic.val('');
+					µC.currentTopic = '';
 					return;
 				}
 				µC.socket.emit('selectTopic', packet);
 				µC.$currentTopic.val(topicId);
+				µC.currentTopic = topicId;
+			}
+		}
+	  , loadMoreMessages: function loadMoreMessages() {
+			var packet = { 
+				channel: µC.currentChannel
+			  , topic: µC.currentTopic
+			  , step: µC.loadingStep
+			};
+			if(packet.channel && packet.step) {
+				µC.socket.emit('loadMoreMessages', packet);
 			}
 		}
 	  , addTopic: function addTopic(topic) {

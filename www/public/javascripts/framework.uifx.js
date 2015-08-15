@@ -4,9 +4,12 @@
 	}
 	framework.uifx = {
 		updateContent: function updateContent(packet) {
-			var $container = µC['$' + packet.type + 'Container'];
-			$container.html(packet.view);
-			µC['$' + packet.type + 'Stack'] = $container.find('ul');
+			var $container = µC['$' + packet.type + 'Container']
+			  , $stack = $container.find('ul')
+			  ;
+			$stack.append(packet.view);
+			µC['$' + packet.type + 'Stack'] = $stack;
+			µC.loadingMore = false;
 		}
 	  , appendContent: function pushContent(packet) {
 			var $stack = µC['$' + packet.type + 'Stack']
@@ -39,8 +42,31 @@
 			$description.val('');
 			$modal.modal('hide');
 		}
+	  , cleanStacks: function cleanStacks(stackNames) {
+			if(!stackNames || !stackNames.length) return;
+			$.each(stackNames, function() {
+				if(this == 'messages') {
+					µC.loadingStep = 1;
+				}
+				µC['$' + this + 'Stack'].html('');
+			});
+		}
 	  , toggleMessageSelection: function toggleMessageSelection($el) {
 			$el.toggleClass('selected');
+		}
+	  , scrollHandler: function scrollHandler() {
+			var scroll = µC.$document.scrollTop()
+			  , scrollBorder = 200
+			  , docH = µC.$document.height()
+			  , winH = µC.$window.height()
+			  , triggerH = docH - winH - scrollBorder
+			  ;
+			µC.loadingStep = µC.loadingStep || 1;
+			if(!µC.loadingMore && scroll > triggerH) {
+				µC.loadingMore = true;
+				µC.loadingStep++;
+				framework.socket.loadMoreMessages();
+			}
 		}
 	  , dragHandler: function dragHandler(e) {
 		    µC.needScrolling = false;

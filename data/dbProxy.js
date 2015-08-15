@@ -241,7 +241,7 @@ var /* MODULES */
 						cursor = cursor.sort(options.sort);
 					}
 					if(options.skip) {
-						cursor = cursor.skip(optons.skip);
+						cursor = cursor.skip(options.skip);
 					}
 					if(options.limit) {
 						cursor = cursor.limit(options.limit);
@@ -276,7 +276,7 @@ var /* MODULES */
 						cursor = cursor.sort(options.sort);
 					}
 					if(options.skip) {
-						cursor = cursor.skip(optons.skip);
+						cursor = cursor.skip(options.skip);
 					}
 					if(options.limit) {
 						cursor = cursor.limit(options.limit);
@@ -312,7 +312,7 @@ var /* MODULES */
 						cursor = cursor.sort(options.sort);
 					}
 					if(options.skip) {
-						cursor = cursor.skip(optons.skip);
+						cursor = cursor.skip(options.skip);
 					}
 					if(options.limit) {
 						cursor = cursor.limit(options.limit);

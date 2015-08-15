@@ -18,7 +18,22 @@ var /* MODULES */
 	// socketIO proxy
   , socketIOProxy = require('./socketIOProxy.js')
   
-  , dateIntl = new Intl.DateTimeFormat('fr-FR', { day: "2-digit", year: "numeric", month:  "2-digit", hour:  "2-digit", minute:  "2-digit", second:  "2-digit" })
+  , formatStamp = function format(datestamp) {
+		var date = new Date(datestamp)
+		  , day = date.getDate() + ''
+		  , month = date.getMonth() + ''
+		  , year = date.getFullYear() + ''
+		  , hours = date.getHours() + ''
+		  , minutes = date.getMinutes() + ''
+		  , seconds = date.getSeconds() + ''
+		  ;
+		day.length == 1 && (day = '0' + day);
+		month.length == 1 && (month = '0' + month);
+		hours.length == 1 && (hours = '0' + hours);
+		minutes.length == 1 && (minutes = '0' + minutes);
+		seconds.length == 1 && (seconds = '0' + seconds);
+		return day + '/' + month + '/' + year + ' ' + hours + ':' + minutes +  ':' + seconds;
+	}
   
   , wwwProxy = function wwwProxy(config, db) {
 		// check whenever a configuration has been passed
@@ -66,7 +81,7 @@ var /* MODULES */
 			}
 			/* RENDERER */
 		  , renderer = function renderer(viewName, viewData) {
-				viewData.dateIntl = dateIntl;
+				viewData.formatStamp = formatStamp;
 				return new Promise(function(resolve, reject){
 					app.render(
 						viewName
