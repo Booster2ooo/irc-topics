@@ -9,6 +9,7 @@
 		selectors: {
 			header:				'#header'
 		  , tooltips:			'[data-toggle="tooltip"]'
+		  , btnToTop:			'#back-top'
 		  
 		  , currentChannel:		'#current_channel'
 		  , channelsContainer:	'#channels-container'

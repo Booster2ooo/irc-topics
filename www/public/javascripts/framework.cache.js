@@ -15,6 +15,7 @@
 	  , $messagesContainer: null
 	  , $messagesStack: null
 	  , $tooltips: null
+	  , $btnToTop: null
 	  
 	  , init: function init() {
 			this.$body = $('body');
@@ -30,6 +31,7 @@
 			this.$messagesContainer = $(µS.messagesContainer);
 			this.$messagesStack = this.$messagesContainer.find('ul');
 			this.$tooltips = $(µS.tooltips);
+			this.$btnToTop = $(µS.btnToTop);
 		}
 	}
 }());

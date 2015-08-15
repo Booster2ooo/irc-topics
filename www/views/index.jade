@@ -28,6 +28,10 @@ block content
 			div
 				ul
 			//- include messages.jade
+	button(id='back-top',class='btn btn-primary')
+		span(class='glyphicon glyphicon-menu-up')
+		div To top
+		
 	input(type='hidden', name='current_channel', id='current_channel', value=channel)
 	input(type='hidden', name='current_topic', id='current_topic', value='')
 	include modals/addTopic.jade

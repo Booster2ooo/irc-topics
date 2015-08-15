@@ -35,7 +35,17 @@
 				.on('click', µS.btnItemMessage, function(e) {
 					e.preventDefault && e.preventDefault();
 					framework.uifx.toggleMessageSelection($(this));
-					return false;					
+					return false;
+				})
+				.on('click', µS.btnToTop, function(e) {
+					e.preventDefault && e.preventDefault();
+					µC.$document.scrollTop(0);
+					return false;
+				})
+				.on('dragover', µS.btnToTop, function(e) {
+					e.preventDefault && e.preventDefault();
+					µC.$document.scrollTop(0);
+					return false;
 				})
 				.on('dragstart', µS.btnItemMessage+'.selected', framework.uifx.dragStartHandler)
 				.on('dragend', µS.btnItemMessage+'.selected', framework.uifx.dragEndHandler)
