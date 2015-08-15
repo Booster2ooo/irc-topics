@@ -37,12 +37,7 @@
 					framework.uifx.toggleMessageSelection($(this));
 					return false;
 				})
-				.on('click', µS.btnToTop, function(e) {
-					e.preventDefault && e.preventDefault();
-					µC.$document.scrollTop(0);
-					return false;
-				})
-				.on('dragover', µS.btnToTop, function(e) {
+				.on('click dragover', µS.btnToTop, function(e) {
 					e.preventDefault && e.preventDefault();
 					µC.$document.scrollTop(0);
 					return false;
