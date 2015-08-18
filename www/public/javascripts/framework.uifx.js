@@ -52,7 +52,11 @@
 			});
 		}
 	  , toggleMessageSelection: function toggleMessageSelection($el) {
-			$el.toggleClass('selected');
+			var selectedClass = 'selected'
+			  , wasSelected = $el.hasClass(selectedClass)
+			  ;
+			$el.toggleClass(selectedClass);
+			wasSelected ? $el.attr('draggable', false) :  $el.attr('draggable', true);
 		}
 	  , scrollHandler: function scrollHandler() {
 			var scroll = µC.$document.scrollTop()
