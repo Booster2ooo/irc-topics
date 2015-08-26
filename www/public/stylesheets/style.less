@@ -23,6 +23,10 @@
 	position: fixed;
 	bottom: @gutter;
 	left: @gutter;
+	opacity: 0.3;
+	&:hover {
+		opacity: 1;
+	}
 }
 
 .topic {
@@ -44,8 +48,9 @@
 
 .message {
 	width: 100%;
-	cursor: pointer;
+	cursor: copy;
 	color: @brand-primary;
+	word-wrap: break-word;
 	&:hover {
 		background-color: @active-color;
 	}
@@ -58,6 +63,10 @@
 	&.selected {
 		cursor: move;
 		background-color: @active-color;
+	}
+	a {
+		cursor: pointer;
+		color: @brand-warning;
 	}
 }
 

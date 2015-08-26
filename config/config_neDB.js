@@ -58,19 +58,6 @@ var
 				// regexp databases file prefix
 			  , regexp: './data/db/regexp'
 			}
-			// mongoDB connection URL
-		  , mongoURL: 'mongodb://localhost:27017/irc-topics'
-			// mongo client options
-		  , mongoOptions: {
-				db: {
-					w: 1
-				  , wtimeout: 0
-				  , forceServerObjectId: true
-				}
-			  , server: {
-					poolSize: 10
-				}
-			}
 			// events signature
 		  , events: {
 				/* INIT */

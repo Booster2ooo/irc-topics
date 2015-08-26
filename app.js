@@ -17,6 +17,22 @@ var
   
 	/* INSTANCES */
   , db = new dbProxy(config)
+  
+	// handle program closing
+  , exitHandler = function exitHandler(info, err) {
+		console.log(info);
+		if (err) console.log(err.stack);
+		db.getInstances()
+			.then(function(instance) {
+				if(instance.conn) {
+					instance.conn.close();
+				}
+			})
+			.catch(function(err) {
+				console.log(err);
+			});
+		process.exit();
+	}
   ;
 
 // start by initializing databases
@@ -32,3 +48,11 @@ db.init()
 	})
 	;
 	
+//do something when app is closing
+process.on('exit', function(code) { exitHandler(code); });
+
+//catches ctrl+c event
+process.on('SIGINT', function() { exitHandler('signit'); });
+
+//catches uncaught exceptions
+process.on('uncaughtException', function(err) { exitHandler('error', err); });

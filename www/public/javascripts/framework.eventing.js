@@ -33,9 +33,11 @@
 					return false;
 				})
 				.on('click', µS.btnItemMessage, function(e) {
-					e.preventDefault && e.preventDefault();
-					framework.uifx.toggleMessageSelection($(this));
-					return false;
+					if(e.target.nodeName.toLowerCase() !== 'a') {
+						e.preventDefault && e.preventDefault();
+						framework.uifx.toggleMessageSelection($(this));
+						return false;
+					}
 				})
 				.on('click dragover', µS.btnToTop, function(e) {
 					e.preventDefault && e.preventDefault();

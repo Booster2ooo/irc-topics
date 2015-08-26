@@ -21,7 +21,7 @@ var /* MODULES */
   , formatStamp = function format(datestamp) {
 		var date = new Date(datestamp)
 		  , day = date.getDate() + ''
-		  , month = date.getMonth() + ''
+		  , month = (date.getMonth()+1) + ''
 		  , year = date.getFullYear() + ''
 		  , hours = date.getHours() + ''
 		  , minutes = date.getMinutes() + ''
@@ -81,6 +81,7 @@ var /* MODULES */
 			}
 			/* RENDERER */
 		  , renderer = function renderer(viewName, viewData) {
+				var urlRegExp = /((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$]))/gi;
 				viewData.formatStamp = formatStamp;
 				return new Promise(function(resolve, reject){
 					app.render(
@@ -91,6 +92,7 @@ var /* MODULES */
 								reject(err);
 								return;
 							}
+							html = html.replace(urlRegExp, '<a href="$1" target="_blank">$1</a>');
 							resolve(html);
 					  }
 					);

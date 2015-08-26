@@ -57,7 +57,7 @@ var /* MODULES */
 						}
 					;
 					// if the command route doesn't exist (as a function)
-					if(!commandsRoutes[command.trigger] || typeof(commandsRoutes[command.trigger]) !== typeof(function(){})) {
+					if(!commandsRoutes[command.trigger] || !commandsRoutes.hasOwnProperty(command.trigger) || typeof(commandsRoutes[command.trigger]) !== typeof(function(){})) {
 						// unknown command
 						reject('Unknown command');
 					}
@@ -335,6 +335,7 @@ var /* MODULES */
 							var err = "!delRegExp invalid arguments, you must provide an id";
 							ircClient.say(cmd.nick, err);
 							reject(err);
+							return;
 						}
 						db.remove({
 							channel: cmd.channel
