@@ -2,25 +2,39 @@ var /* MODULES */
 	// load irc module
 	irc = require('irc')
 	// load promise module
-  , Promise = require('es6-promise').Promise
+//  , Promise = require('es6-promise').Promise
 	// load extend module
   , extend = require('extend')
+    // utils module
+  , utils = require('../utils/utils.js')
+    // statsHelper module
+  , statsModule = require('../utils/statsHelper.js')
   
   , ircProxy = function ircProxy(config, db) {
 		// check whenever a configuration has been passed
 		if(!config) throw 'IRC proxy: configuration not found';
 		if(!db) throw 'IRC proxy: instance of dbProxy not found';
-		var /* VARIABLES */
+		var /* INSTANCES */
+            // irc bot instance
+            ircClient = new irc.Client(config.irc.server, config.irc.nick, config.irc.options)
+          , statsHelper = statsModule(db)
+		    /* VARIABLES */
 			// text displayed when !help command is typed
-			helpText = [
+		  , helpText = [
 				"Hello, I'am "+config.irc.nick+" ("+config.project.name+" v"+config.project.version+"). I'm here to log messages in order to keep track of interesting things being said."
 			  , "Every message can be assigned to a topic, allowing people to easily follow conversations even if they were off-line."
 			  , "You can either use the web interface to assign a topic to a message or end your sentence with @topic_name."
-			  , "Available commands:"
-			  , "!help - displays the help you're reading right now"
-			  , "!addRegExp [/regular expression/flags] [@topic name] - creates a new regular expression that will automatically assign matching messages to @topic_name"
-			  , "!listRegExp - list existing regular expressions in the current channel"
-			  , "!delRegExp [id] - removes a regular expression using its id"
+			  , "Available commands (arguments marked with ? are optional, |channel| is the target channel if the command is used in private message):"
+			  , "!help |channel| - displays the help you're reading right now"
+			  , "!addRegExp |channel| [/regular expression/flags] [@topic name] - creates a new regular expression that will automatically assign matching messages to @topic_name"
+			  , "!listRegExp |channel| - list existing regular expressions in the current channel"
+			  , "!delRegExp |channel| [id] - removes a regular expression using its id"
+			  , "!applyRegExp |channel| [id] - apply the regular expression to all messages /!\\ use with care"
+			  , "!listTopics |channel| - list existing topics"
+			  , "!descTopic |channel| [id] [description] - add a description to a topic (with no description)"
+			  , "!last |channel| [count?] [@topic_name?] - get last messages (5 by default). You can get more than 5 messages by specifying a count. You can also specify a topic by giving its name (starting with @, case sensitive)"
+			  , "!stats |channel| [period?: "+ utils.dateExpressions.join("|") +"?] [count?] - get [count] lines of stats for the specified period (default today)"
+              , "!top |channel| [field: "+ statsHelper.topFields.join("|") + "?] [period?: "+ utils.dateExpressions.join("|") +"?] [count?] - get the top [count] of [field] in [period]"
 			//  , "!log [on|off] - turns on or off the tracking of your messages in the channel the command has been send to"
 			//  , "!logAll [on|off] - turns on or off the tracking of your messages in every channels the bot is present at the moment of the command"
 			]
@@ -30,13 +44,15 @@ var /* MODULES */
 		  , cooldown = {
 				help: []
 			}
-			/* INSTANCES */
-			// irc bot instance
-		  , ircClient = new irc.Client(config.irc.server, config.irc.nick, config.irc.options)
+            // emojis list (used for stats)
+          , emojis = [
+                "(>_<)", "(>_<)>", "(';')", "(^^ゞ", "(^_^;)", "(-_-;)", "(~_~;)", "(・。・;)", "(・_・;)", "(・・;)", "^^;", "^_^;", "(#^.^#)", "(^^;)", ".。o○ ○o。.", "<コ:彡", "(^。^)y-.。o○", "(-。-)y-゜゜゜", "(-_-)zzz", "(^_-)", "(^_-)-☆", "((+_+))", "(+o+)", "(゜゜)", "(゜-゜)", "(゜.゜)", "(゜_゜)", "(゜_゜>)", "(゜レ゜)", "o)", "<(｀^´)>", "^_^", "(゜o゜)", "(^_^)/", "(^O^)／", "(^^)/", "(≧∇≦)/", "(/◕ヮ◕)/", "(^o^)丿", "∩(・ω・)∩", "(・ω・)", "^ω^", "(__)", "_(._.)_", "_(_^_)_", "<(_ _)>", "<m(__)m>", "m(__)m", "m(_ _)m", "(゜゜)～", "( ^^)", "_U~~", "_旦~~", "☆彡", "☆ミ", "＼(゜ロ＼)ココハドコ?", "(／ロ゜)／アタシハダアレ?", ">゜)))彡", "(Q))", "><ヨヨ", "(゜))<<", ">゜))))彡", "<゜)))彡", ">゜))彡", "<+))><<<", "*))>=<", "('_')", "(/_;)", "(T_T)", "(;_;)", "(;_:)", "(;O;)", "(:_;)", "(ToT)", "(Ｔ▽Ｔ)", ";_;", ";-;", ";n;", ";;", "Q.Q", "T.T", "QQ", "Q_Q", "(ー_ー)!!", "(-.-)", "(-_-)", "(一一)", "(；一_一)", "Ｃ:。ミ", "(=_=)", "~>゜)～～～　", "～゜・_・゜～　", "(=^・^=)", "(=^・・^=)", "=_^=", "(..)", "(._.)", "^m^", "(・・?", "(?_?)", "(－‸ლ)", ">^_^<", "<^!^>", "^/^", "（*^_^*）", "§^。^§", "(^<^)", "(^.^)", "(^ム^)", "(^・^)", "(^。^)", "(^_^.)", "(^_^)", "(^^)", "(^J^)", "(*^。^*)", "（＾－＾）", "(^^)/~~~", "(^_^)/~", "(;_;)/~~~", "(^.^)/~~~", "($・・)/~~~", "(@^^)/~~~", "(T_T)/~~~", "(ToT)/~~~", "●～*", "(V)o￥o(V)", "＼(~o~)／", "＼(^o^)／", "＼(-o-)／", "ヽ(^。^)ノ", "ヽ(^o^)丿", "(*^0^*)", "(*_*)", "(*_*;", "(+_+)", "(@_@)", "(@_@。", "(＠_＠;)", "＼(◎o◎)／！", "(-_-)/~~~ピシー!ピシー!", " !(^^)!", "(*^^)v", "(^^)v", "(^_^)v", "(＾▽＾)", "（・∀・）", "（　´∀｀）", "（⌒▽⌒）", "（＾ｖ＾）", "（’-’*)", "(~o~)", "(~_~)", "(p_-)", "((d[-_-]b))", "(-\"-)", "(ーー゛)", "(^_^メ)", "(-_-メ)", "(｀´）", "(~_~メ)", "(－－〆)", "(・へ・)", "<`～´>", "<`ヘ´>", "(ーー;)", "(^0_0^)", "( ..)φメモメモ", "φ(..)メモメモ", ":3ミ", ":->", "8-<", ":-)", ":-<", ":(", ":-(", ":)", ":|", ":-|", "（●＾o＾●）", "（＾ｕ＾）", "（＾◇＾）", "( ^)o(^ )", "(^O^)", "(^○^)", ")^o^(", "(*^▽^*)", "(✿◠‿◠)", "（￣ー￣）", "（￣□￣；）", "°o°", ":O", "o_O", "o_0", "o.O", "(o.o)", "（*´▽｀*）", "(*°∀°)=3", "（ ﾟ Дﾟ）", "（゜◇゜）", "(*￣m￣)", "ヽ（´ー｀）┌", "¯\\_(ツ)_/¯", "(´･ω･`)", "(‘A`)", "(*^3^)/~☆", ".....φ(・∀・＊)", "キタ━━━(゜∀゜)━━━!!!!! ", "(╯°□°）╯︵ ┻━┻", "┬──┬ ¯\\_(ツ)", "┻━┻︵ヽ(`Д´)ﾉ︵ ┻━┻", "┬─┬ノ( º _ ºノ)", "(ノಠ益ಠ)ノ彡┻━┻", ":D", ":o)", ":]", ":3", ":c)", ":>", "=]", "8)", "=)", ":}", ":^)", ":っ)", ":-D", "8-D", "8D", "x-D", "xD", "=-D", "=-3", "=3", "B^D", ":-))", ">:[", ":-c", ":c", ":っC", ":<", ":-[", ":[", ":{", ";(", ":-||", ":@", ">:(", ":'-(", ":'(", ":'-)", ":')", "D:<", "D:", "D8", "D;", "D=", "DX", "v.v", "D-':", ">:O", ":-O", "8-0", "o-o", ":*", ":-*", ":^*", ";-)", ";)", "*-)", "*)", ";-]", ";]", ";D", ";^)", ":-,", ">:P", ":-P", ":P", "X-P", "xp", ":-Þ", ":Þ", ":-b", ":b", ">:\\", ">:/", ":-/", ":-.", ":/", ":\\", "=/", ":L", ":S", ">.<", ":$", ":-X", ":X", ":-#", ":#", "O:-)", "0:-3", "03", "0:-)", "0:)", "0;^)", ">:)", ">;)", ">:-)", "}:-)", "}:)", "3:-)", "3:)", "o/\\o", "^5", ">_>^", "^<_<", "|;-)", "|-O", ":-J", ":-&", ":&", "#-)", "%-)", "%)", ":-###..", ":###..", "<:-|", "ಠ_ಠ", "(", "͡°", "͜ʖ", "͡°)(", "͡°͜", "͡°)", "<*)))-{", "><(((*>", "><>", "\\o/", "*\\0/*", "@}-;-'---", "@>-->--", "~(_8^(I)", "5:-)", "~:-\\", "//0-0\\\\", "*<|:-)", "=:o]", "7:^]", ",:-)", "</3", "<3"
+            ]
+          , emojisSet = new Set(emojis)
 			
 			/* FUNCTIONS */
 			// try to find and execute a bot command
-		  , tryCommand = function executeCommande(channel, nick, textParts) {
+		  , tryCommand = function tryCommand(channel, nick, textParts) {
 				return new Promise(function(resolve, reject) {
 					// if the first letter of the first word isn't !, then assume it's not a command
 					if(textParts[0][0] != "!") {
@@ -61,6 +77,11 @@ var /* MODULES */
 						// unknown command
 						reject('Unknown command');
 					}
+                    // check if is cooling down
+                    if(isCoolingdown(command)) {
+                        // resolve ( don't log )
+                        return resolve();
+                    }
 					// try to execute command
 					commandsRoutes[command.trigger](command)
 						.then(resolve)
@@ -70,7 +91,62 @@ var /* MODULES */
 						;
 				});
 			}
-			/* BOT COMMANDS */		
+		  , isCoolingdown = function isCoolingdown(cmd) {
+                cooldown[cmd.trigger] = cooldown[cmd.trigger] || [];
+                // check if there is a cooldown for that user
+                return cooldown[cmd.trigger].indexOf(cmd.nick) > -1;
+            }
+          , initCooldown = function initCooldown(cmd, timeout) {
+                timeout = timeout || 10000;
+                cooldown[cmd.trigger] = cooldown[cmd.trigger] || [];
+                // add a cooldown for this command
+                cooldown[cmd.trigger].push(cmd.nick);
+                // and remove it 10 seconds later
+                setTimeout(function() {
+                    var idx = cooldown[cmd.trigger].indexOf(cmd.nick);
+                    if(idx > -1) {
+                        cooldown[cmd.trigger].splice(idx,1);
+                    }
+                }, timeout);
+            }
+		  , announceTop = function announceTop() {
+                config.irc.options.channels.forEach(function(channel) {
+                    var statsContext = {
+                        field: 'words'
+                      , period: 'yesterday'
+                      , limit: 5
+                      , channel: channel
+                    };
+                    statsHelper
+                        .getStats(statsContext)
+                        .then(function(stats) {
+                            var msg = "Top " + statsContext.limit + " " + statsContext.field + " count (" +  statsContext.period + ") --- ";
+                            stats.forEach(function(line, idx) {
+                                msg += (idx+1).toString() + '. ' + line.author + ': ' + line[statsContext.field] + ' | ';
+                            });
+                            ircClient.say(channel, msg.substr(0, msg.length - 2));
+                            resolve();
+                        })
+                        .catch(function(err) {
+                            reject(err);
+                        });
+                });
+            }
+          , announceTimer = function accounceTimer() {
+                var now = new Date()
+                  , when = new Date()
+                  , intervalMs
+                  ;
+                when.setHours(0,10,0,0);
+                when.setDate(when.getDate() + 1);
+                intervalMs = when.getTime() - now.getTime();
+                setTimeout(function() {
+                    announceTop();
+                    announceTimer();
+                }, intervalMs);
+            }
+
+			/* BOT COMMANDS */
 			// reroute commands to function
 		  , commandsRoutes = {
 			/*	// !log command router
@@ -104,12 +180,6 @@ var /* MODULES */
 				// !help command router
 			  ,*/help: function help(cmd) {
 					return new Promise(function(resolve, reject){
-						cooldown.help = cooldown.help || [];
-						// check if there is a cooldown for that user
-						if(cooldown.help.indexOf(cmd.nick) > -1) {
-							reject();
-							return;
-						}
 						// reroute to commands.help
 						commands.help(cmd)
 							.then(resolve)
@@ -126,13 +196,7 @@ var /* MODULES */
 					});
 				}
 			  , listRegExp: function listRegExp(cmd) {
-					return new Promise(function(resolve, reject){						
-						cooldown.listRegExp = cooldown.listRegExp || [];
-						// check if there is a cooldown for that user
-						if(cooldown.listRegExp.indexOf(cmd.nick) > -1) {
-							reject();
-							return;
-						}
+					return new Promise(function(resolve, reject){
 						commands.listRegExp(cmd)
 							.then(resolve)
 							.catch(reject)
@@ -147,6 +211,54 @@ var /* MODULES */
 							;
 					});
 				}
+			  , applyRegExp: function applyRegExp(cmd) {
+					return new Promise(function(resolve, reject){
+						commands.applyRegExp(cmd)
+							.then(resolve)
+							.catch(reject)
+							;
+					});
+				}
+			  , listTopics: function listTopics(cmd) {
+					return new Promise(function(resolve, reject){
+						commands.listTopics(cmd)
+							.then(resolve)
+							.catch(reject)
+							;
+					});
+				}
+			  , descTopic: function descTopic(cmd) {
+					return new Promise(function(resolve, reject){
+						commands.descTopic(cmd)
+							.then(resolve)
+							.catch(reject)
+							;
+					});
+				}
+			  , last: function last(cmd) {
+					return new Promise(function(resolve, reject){
+						commands.last(cmd)
+							.then(resolve)
+							.catch(reject)
+							;
+					});
+				}
+              , stats: function stats(cmd) {
+                    return new Promise(function(resolve, reject){
+                        commands.stats(cmd)
+                            .then(resolve)
+                            .catch(reject)
+                            ;
+                    });
+                }
+              , top: function rop(cmd) {
+                    return new Promise(function(resolve, reject){
+                        commands.top(cmd)
+                            .then(resolve)
+                            .catch(reject)
+                            ;
+                    });
+                }
 			}
 		  , commands = {
 				// !log command function
@@ -206,21 +318,14 @@ var /* MODULES */
 					});
 				}
 			  , help: function help(cmd) {
-					return new Promise(function(resolve, reject) {						
-						cooldown.help = cooldown.help || [];
+					return new Promise(function(resolve, reject) {
+                        initCooldown(cmd);
 						// display each line of the help text
-						helpText.forEach(function(line) {
-							ircClient.say(cmd.nick, line);
+						helpText.forEach(function(line, idx) {
+                            setTimeout(function() {
+							    ircClient.say(cmd.nick, line);
+                            }, 500 * (idx+1));
 						});
-						// add a cooldown for this command
-						cooldown.help.push(cmd.nick);
-						// and remove it 10 seconds later
-						setTimeout(function() {
-							var idx = cooldown.help.indexOf(cmd.nick);
-							if(idx > -1) {
-								cooldown.help.splice(idx,1);
-							}
-						}, 10000);
 						// always resolve the promise
 						resolve();
 					});
@@ -236,6 +341,7 @@ var /* MODULES */
 							  , topic: matches && matches[3] ? matches[3].replace(/\s/g,'_') : ''
 							}
 						  ;
+                        initCooldown(cmd);
 						if(!matches || !regexp.expression || !regexp.topic) {
 							var err = "!addRegExp invalid arguments";
 							ircClient.say(cmd.nick, err);
@@ -252,7 +358,7 @@ var /* MODULES */
 						})
 						.then(function(entity) {
 							if(entity) {
-								ircClient.say(cmd.channel, 'regexp already exists');
+								ircClient.say(cmd.nick, 'regexp already exists');
 								resolve();
 								throw 'regexp already exists';
 							}
@@ -270,7 +376,7 @@ var /* MODULES */
 							});
 						})
 						.then(function(topic) {
-							ircClient.say(cmd.channel, 'regexp added');
+							ircClient.say(cmd.nick, 'regexp added');
 							if(topic) {
 								resolve();
 								throw 'topic already exists';
@@ -296,8 +402,8 @@ var /* MODULES */
 					});
 				}
 			  , listRegExp: function listRegExp(cmd) {
-					return new Promise(function(resolve, reject) {						
-						cooldown.listRegExp = cooldown.listRegExp || [];
+					return new Promise(function(resolve, reject) {
+                        initCooldown(cmd);
 						db.getAll({
 							channel: cmd.channel
 						  , type: 'regexp'
@@ -305,6 +411,7 @@ var /* MODULES */
 						.then(function(regexps) {
 							if(!regexps || !regexps.length) {
 								ircClient.say(cmd.nick, 'No regular expressions found for ' + cmd.channel);
+								resolve();
 							}
 							else {
 								ircClient.say(cmd.nick, 'List of regular expressions found for ' + cmd.channel);
@@ -316,26 +423,18 @@ var /* MODULES */
 						})
 						.catch(function(err) {
 							reject(err);
-						})
-						// add a cooldown for this command
-						cooldown.listRegExp.push(cmd.nick);
-						// and remove it 10 seconds later
-						setTimeout(function() {
-							var idx = cooldown.listRegExp.indexOf(cmd.nick);
-							if(idx > -1) {
-								cooldown.listRegExp.splice(idx,1);
-							}
-						}, 10000);
+						});
 					});
 				}
 			  , delRegExp: function delRegExp(cmd) {
-					return new Promise(function(resolve, reject) {						
+					return new Promise(function(resolve, reject) {
 						var id = cmd.args[0];
+                        initCooldown(cmd);
 						if(!id) {
 							var err = "!delRegExp invalid arguments, you must provide an id";
 							ircClient.say(cmd.nick, err);
 							reject(err);
-							return;
+							throw err;
 						}
 						db.remove({
 							channel: cmd.channel
@@ -343,12 +442,331 @@ var /* MODULES */
 						  , query: { _id: id }
 						})
 						.then(function(count) {
-							ircClient.say(cmd.channel,'regexp removed');
+							ircClient.say(cmd.nick,'regexp removed');
 							resolve();
 						})
 						.catch(function(err) {
 							reject(err);
 						});
+					});
+				}
+			  , applyRegExp: function applyRegExp(cmd) {
+					return new Promise(function(resolve, reject) {
+						var id = cmd.args[0]
+						  , regexp = {}
+						  , topic = {}
+						  , messages = []
+						  ;
+						if(!id) {
+							var err = "!applyRegExp invalid arguments, you must provide an id";
+							ircClient.say(cmd.nick, err);
+							reject(err);
+							throw err;
+						}
+                        initCooldown(cmd, 3600000);
+						db.get({
+							channel: cmd.channel
+						  , type: 'regexp'
+						  , query: { _id: id }
+						})
+						.then(function(reg) {
+							if(!reg) {
+								var err = 'Regular expression not found for ' + cmd.channel;
+								ircClient.say(cmd.nick, err);
+								resolve();
+								throw err;
+							}
+							regexp = reg;
+							return db.get({
+								channel: cmd.channel
+							  , type: 'topics'
+							  , query: { name: regexp.topic}
+							});
+						})
+						.then(function(top) {
+							if(!top) {
+								var err = 'No topic associated with the regular expression';
+								ircClient.say(cmd.nick, err);
+								resolve();
+								throw err;
+							}
+							topic = top;
+							return db.getAll({
+								channel: cmd.channel
+							  , type: 'messages'
+							  , query: {
+									text: {
+										$regex: regexp.expression
+									  , $options: regexp.flags.replace('g','s')
+									}
+								}
+							  , projection: { _id: 1 }
+							});
+						})
+						.then(function(mess) {
+							if(!mess) {
+								var err = 'No message seems to match the regular expression';
+								ircClient.say(cmd.nick, err);
+								resolve();
+								throw err;
+							}
+							messages = mess;
+							mess = [];
+							topic.messages = topic.messages || [];
+							messages.forEach(function(message) {
+								if(topic.messages.indexOf(message._id.toString()) == -1) {
+									topic.messages.push(message._id.toString());
+								}
+							});
+							return db.append({ channel: cmd.channel, type: 'topics', entity: topic});
+						})
+						.then(function() {
+							ircClient.say(cmd.nick, messages.length + ' messages added to the ' + topic.name + ' topic');
+							resolve(messages);
+						})
+						.catch(function(err) {
+							reject(err);
+						});
+					});
+				}
+			  , listTopics: function listTopics(cmd) {
+					return new Promise(function(resolve, reject) {
+                        initCooldown(cmd);
+						db.getAll({
+							channel: cmd.channel
+						  , type: 'topics'
+						})
+						.then(function(topics) {
+							if(!topics || !topics.length) {
+								ircClient.say(cmd.nick, 'No topics found for ' + cmd.channel);
+								resolve();
+							}
+							else {
+								ircClient.say(cmd.nick, 'List of topics found for ' + cmd.channel);
+								topics.forEach(function(line) {
+									ircClient.say(cmd.nick, 'id: ' + line._id + ' | name:' + line.name + ' | description: '+ line.description);
+								});
+								resolve();
+							}
+						})
+						.catch(function(err) {
+							reject(err);
+						});
+					});
+				}
+			  , descTopic: function descTopic(cmd) {
+					return new Promise(function(resolve, reject) {
+						var id = cmd.args[0]
+						  , desc = cmd.args.slice(1).join(' ')
+						  ;
+                        initCooldown(cmd);
+						if(!id || id.length != 24) {
+							var err = "!descTopic invalid arguments, you must provide an id";
+							ircClient.say(cmd.nick, err);
+							reject(err);
+							throw err;
+						}
+						if(!desc) {
+							var err = "!descTopic invalid arguments, you must provide a description";
+							ircClient.say(cmd.nick, err);
+							reject(err);
+							throw err;
+						}
+						db.get({
+							channel: cmd.channel
+						  , type: 'topics'
+						  , query: { _id: id }
+						})
+						.then(function(topic) {
+							if(!topic) {
+								ircClient.say(cmd.nick, 'Topic not found');
+								resolve();
+							}
+							if(topic.description) {
+								ircClient.say(cmd.nick, 'The topic already have a description');
+								resolve();
+							}
+							else {
+								topic.description = desc;
+								db.append({
+									channel: cmd.channel
+								  , type: 'topics'
+								  , entity: topic
+								}).then(function(topic) {
+									ircClient.say(cmd.nick, 'The topic have been described successfully');
+									resolve();
+								});
+							}
+						})
+						.catch(function(err) {
+							reject(err);
+						});
+					});
+				}
+			  , last: function last(cmd) {
+					return new Promise(function(resolve, reject) {
+						var count = parseInt(cmd.args[0], 10) || 5
+						  , topicName = cmd.args[1]
+						  , getTopicPromise = new Promise(function(resolve, reject) { resolve(); })
+						  ;
+                        initCooldown(cmd);
+						if(isNaN(count)) {
+							if(!topicName) {
+								topicName = count;
+							}
+							count = 5;
+						}
+						else if(count > 100) { count = 100; }
+						if(topicName) {
+							if(topicName[0] != '@') {
+								topicName = '@' + topicName;
+							}
+							getTopicPromise = db.get({
+								channel: cmd.channel
+							  , type: 'topics'
+							  , query: { name: topicName }
+							});
+						}
+						getTopicPromise
+						.then(function(topic) {
+							var query = topic ? { _id: { $in: topic.messages } } : {};
+							return db.getAll({
+								channel: cmd.channel
+							  , type: 'messages'
+							  , query: query
+							  , limit: count
+							  , sort: { timestamp: -1 }
+							});
+						})
+						.then(function(messages) {
+							messages.forEach(function(line, idx) {
+                                setTimeout(function() {
+                                    ircClient.say(cmd.nick, utils.formatStamp(line.timestamp).datetime + ' | ' + line.author + ' > ' + line.text);
+                                }, 500 * (idx+1));
+							});
+							resolve();
+						})
+						.catch(function(err) {
+							reject(err);
+						});
+					});
+				}
+			  , stats: function stats(cmd) {
+					return new Promise(function(resolve, reject) {
+						var period = cmd.args[0]
+                          , limit = cmd.args[1]
+                          , statsContext = {}
+                          ;
+                        initCooldown(cmd, 15000);
+                        if(!period) {
+                            period = utils.dateExpressions[0];
+                            limit = 5;
+                        }
+                        else if(!isNaN(period) && (!limit || isNaN(limit))) {
+                          limit = period;
+                        }
+                        else if(!limit) {
+                            limit = 5;
+                        }
+                        if(limit > 50) { limit = 50; }
+						statsContext.period = utils.dateExpressions.indexOf(period) > -1 ? period : utils.dateExpressions[0];
+                        statsContext.channel = cmd.channel;
+                        statsContext.limit = limit;
+						statsHelper
+                            .getStats(statsContext)
+                            .then(function(stats) {
+                                ircClient.say(cmd.nick, "Stats ("+ statsContext.period +")");
+                                stats.forEach(function(line, idx) {
+                                    setTimeout(function() {
+                                        ircClient.say(
+                                            cmd.nick
+                                          , line.author +
+                                            ' - words: ' + line.words +
+                                            ' - lines: ' + line.lines +
+                                            ' - links: ' + line.links +
+                                            ' - emojis: ' + line.emojis +
+                                            ' - words per line: ' + line.wordsPerLine +
+                                            ' - links per line: ' + line.linksPerLine +
+                                            ' - emojis per line: ' + line.emojisPerLine
+                                        );
+                                    }, 500 * (idx+1));
+                                });
+                                resolve();
+                            })
+                            .catch(function(err) {
+                                reject(err);
+                            });
+					});
+				}
+              , top: function top(cmd) {
+					return new Promise(function(resolve, reject) {
+						var field = cmd.args[0]
+                          , period = cmd.args[1]
+                          , limit = cmd.args[2]
+                          , statsContext = {}
+                          ;
+                        initCooldown(cmd, 15000);
+                        if(!limit) {
+                            limit = 5;
+                        }
+                        if(!period) {
+                            period = utils.dateExpressions[0];
+                        }
+                        if(!field) {
+                            field = statsHelper.topFields[0];
+                        }
+                        if(isNaN(period)) {
+                            if(utils.dateExpressions.indexOf(period) == -1) {
+                                period = utils.dateExpressions[0];
+                            }
+                        }
+                        else {
+                            limit = parseInt(period,10);
+                            period = utils.dateExpressions[0];
+                        }
+
+                        if(isNaN(field)) {
+                            if(statsHelper.topFields.indexOf(field) == -1) {
+                                if (period && !isNaN(period)) {
+                                    limit = parseInt(period,10);
+                                }
+                                if(utils.dateExpressions.indexOf(field) > -1) {
+                                    period = field;
+                                }
+                                else {
+                                    if (period && !isNaN(period)) {
+                                        if(!limit || isNaN(limit)) {
+                                            limit = parseInt(period,10);
+                                        }
+                                    }
+                                    period = utils.dateExpressions[0];
+                                }
+                                field = statsHelper.topFields[0];
+                            }
+                        }
+                        else {
+                            limit = parseInt(field, 10);
+                            field = statsHelper.topFields[0];
+                            period = utils.dateExpressions[0];
+                        }
+                        if(limit > 100) { limit = 100; }
+                        statsContext.channel = cmd.channel;
+                        statsContext.period = period;
+                        statsContext.limit = limit;
+                        statsContext.field = field;
+						statsHelper
+                            .getStats(statsContext)
+                            .then(function(stats) {
+                                var msg = "Top " + statsContext.limit + " " + statsContext.field + " count (" +  statsContext.period + ") --- ";
+                                stats.forEach(function(line, idx) {
+                                    msg += (idx+1).toString() + '. ' + line.author + ': ' + line[statsContext.field] + ' | ';
+                                });
+                                ircClient.say(cmd.nick, msg.substr(0, msg.length - 2));
+                                resolve();
+                            })
+                            .catch(function(err) {
+                                reject(err);
+                            });
 					});
 				}
 			}
@@ -360,6 +778,14 @@ var /* MODULES */
 					  , channel = packet.args[0].toLowerCase()
 					  , topic
 					  , message
+                      , stat = {
+                            author: nick
+                          , date: (new Date()).setHours(0,0,0,0)
+                          , lines: 1
+                          , words: textParts.length
+                          , links: 0
+                          , emojis: 0
+                        }
 					  ;
 					// check if the message really comes from a channel (should not be triggered as the message event specifies a channel)
 					if(channel[0] != '#') {
@@ -407,7 +833,8 @@ var /* MODULES */
 											message = {
 												timestamp: (new Date()).getTime()
 											  , author: nick
-											  , text: textParts.join(' ')
+											  //, text: textParts.join(' ') // ~ used to remove the trailing @topic at the end of the sentence, but it's probably better to keep it there
+                                              , text: text
 											};
 											// insert the message in the db
 											return db.append({channel: channel, type: 'messages', entity: message});
@@ -431,6 +858,9 @@ var /* MODULES */
 												if(regexpInstance.test(message.text)) {
 													// then get its topic
 													topicQueue.push(db.get({ channel: channel, type: 'topics', query: { name: regexp.topic}}));
+                                                    if(regexp.topic === "@URL_Bookmark") {
+                                                        stat.links++;
+                                                    }
 												}
 											});
 											Promise.all(topicQueue)
@@ -449,7 +879,33 @@ var /* MODULES */
 										})
 										.catch(function (err) {
 											config.debug && console.error(err);
-										})
+										});
+                                        // looking for emojis
+                                        for(var i = 0, c = textParts.length; i<c; i++) {
+                                            if(emojisSet.has(textParts[i])) {
+                                                stat.emojis++;
+                                            }
+                                        }
+                                        //creating or updating stats
+                                        db.get({
+                                            channel: channel
+                                          , type: 'stats'
+                                          , query: { $and: [ { author: stat.author }, { date: stat.date } ] }
+                                        })
+                                        .then(function(dbstat) {
+                                            if(!dbstat) {
+                                                return db.append({ channel: channel, type: 'stats', entity: stat});
+                                            }
+                                            dbstat.lines += stat.lines;
+                                            dbstat.words += stat.words;
+                                            dbstat.links += stat.links;
+                                            dbstat.emojis += stat.emojis;
+                                            return db.append({ channel: channel, type: 'stats', entity: dbstat});
+                                        })
+                                        .catch(function (err) {
+                                            config.debug && console.error(err);
+                                        });
+
 										// check if a topic is associated with @topic
 										if(topic) {
 											// if so, check if the topic already exists in the db
@@ -489,18 +945,52 @@ var /* MODULES */
 						ircClient.say(channel,greetings);
 					}
 				}
-			}
+			  , pmHandler: function pmHandler(nick, text, packet) {
+                    var textParts = text.split(' ')
+                      , cmd = textParts[0]
+                      , channel = textParts.splice(1,1)[0]
+                      , trigger = cmd.substr(1,cmd.length-1)
+                      ;
+                    if(cmd[0] !== '!') {
+                        return;
+                    }
+
+                    if(!commandsRoutes[trigger] || !commandsRoutes.hasOwnProperty(trigger) || typeof(commandsRoutes[trigger]) !== typeof(function(){})) {
+                        return;
+                    }
+
+                    if(!channel) {
+                        return;
+                    }
+                    channel = channel.toLowerCase();
+                    if(channel[0] !== '#') {
+                        ircClient.say(nick, 'You must specify a target channel right after the command is order to use it in private.');
+                        return;
+                    }
+                    else if(config.irc.options.channels.indexOf(channel) == -1) {
+                        ircClient.say(nick, 'Invalid channel.');
+                        return;
+                    }
+                    packet.args.reverse();
+                    packet.args.push(channel);
+                    packet.args.reverse();
+                    text = textParts.join(' ');
+                    handlers.messageHandler(nick, text, packet);
+                }
+            }
 		  ;
 		ircClient
 			.addListener('error', handlers.errorHandler)
 			.addListener('ping', handlers.pingHandler)
 			.addListener('close', handlers.closeHandler)
-			.addListener('join', handlers.joinHandler)
+		//	.addListener('join', handlers.joinHandler)
 		//	.addListener('raw', handlers.rawHandler)
+            .addListener('pm', handlers.pmHandler)
 			;
 		config.irc.options.channels.forEach(function(channel) {
 			ircClient.addListener('message'+channel, handlers.messageHandler);
 		});
+        announceTimer();
 		return ircClient;
 	}
   ;

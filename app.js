@@ -3,13 +3,11 @@
 var 
 	/* MODULES */
 	// load promise module
-	Promise = require('es6-promise').Promise
+	//Promise = require('es6-promise').Promise
 	// load config module
-  , config = require('./config/config.js')
+    config = require('./config/config.js')
 	// load database proxy module
   , dbProxy = require('./data/dbProxy.js')
-	// load events module
-  , events = require('events')
 	// load irc proxy module
   , ircProxy = require('./irc/ircProxy.js')
 	// load www proxy module
@@ -26,6 +24,7 @@ var
 			.then(function(instance) {
 				if(instance.conn) {
 					instance.conn.close();
+					instance.conn = {};
 				}
 			})
 			.catch(function(err) {

@@ -14,7 +14,8 @@
 			  , force: force
 			};
 			if(packet.channel) {
-				framework.uifx.cleanStacks(['topics', 'messages']);
+				µC.loadScroll = true;
+				if(force || µC.currentChannel !== channelId) framework.uifx.cleanStacks(['topics', 'messages']);
 				µC.socket.emit('selectChannel', packet);
 			}
 		}
@@ -24,7 +25,8 @@
 			  , topic: topicId
 			};
 			
-			if(packet.topic && packet.channel) {				
+			if(packet.topic && packet.channel) {
+				µC.loadScroll = true;
 				framework.uifx.cleanStacks(['messages']);
 				if(packet.topic == 'topic-none') {
 					framework.socket.selectChannel(µC.currentChannel, true);
@@ -60,6 +62,20 @@
 			var packet = $.extend(options, { channel: µC.currentChannel });
 			if(packet.topic && packet.messages &&  packet.messages.length && packet.channel) {
 				µC.socket.emit('addMessageToTopic', packet);
+			}
+		}
+	  , searchMessages: function searchMessages(query) {
+			if(query.timestamp || query.author || query.text) {
+				µC.loadScroll = false;
+				var packet = {
+					channel: µC.currentChannel
+				  , topic: µC.currentTopic
+				  , query: query
+				};
+			}
+			if(packet.channel) {
+				framework.uifx.cleanStacks(['messages']);
+				µC.socket.emit('searchMessages', packet);
 			}
 		}
 	}

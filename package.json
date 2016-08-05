@@ -1,6 +1,6 @@
 {
   "name": "irc-topics",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Used to categorize IRC logs into topics",
   "main": "app.js",
   "scripts": {

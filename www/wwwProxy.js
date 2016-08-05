@@ -17,23 +17,8 @@ var /* MODULES */
   , routes = require('./routes/index.js')
 	// socketIO proxy
   , socketIOProxy = require('./socketIOProxy.js')
-  
-  , formatStamp = function format(datestamp) {
-		var date = new Date(datestamp)
-		  , day = date.getDate() + ''
-		  , month = (date.getMonth()+1) + ''
-		  , year = date.getFullYear() + ''
-		  , hours = date.getHours() + ''
-		  , minutes = date.getMinutes() + ''
-		  , seconds = date.getSeconds() + ''
-		  ;
-		day.length == 1 && (day = '0' + day);
-		month.length == 1 && (month = '0' + month);
-		hours.length == 1 && (hours = '0' + hours);
-		minutes.length == 1 && (minutes = '0' + minutes);
-		seconds.length == 1 && (seconds = '0' + seconds);
-		return day + '/' + month + '/' + year + ' ' + hours + ':' + minutes +  ':' + seconds;
-	}
+    // utils module
+  , utils = require('../utils/utils.js')
   
   , wwwProxy = function wwwProxy(config, db) {
 		// check whenever a configuration has been passed
@@ -82,7 +67,7 @@ var /* MODULES */
 			/* RENDERER */
 		  , renderer = function renderer(viewName, viewData) {
 				var urlRegExp = /((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$]))/gi;
-				viewData.formatStamp = formatStamp;
+				viewData.formatStamp = utils.formatStamp;
 				return new Promise(function(resolve, reject){
 					app.render(
 						viewName

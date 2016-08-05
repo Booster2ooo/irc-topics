@@ -7,6 +7,9 @@
 			var $container = µC['$' + packet.type + 'Container']
 			  , $stack = $container.find('ul')
 			  ;
+			if(packet.test) {
+				packet.test();
+			}
 			$stack.append(packet.view);
 			µC['$' + packet.type + 'Stack'] = $stack;
 			µC.loadingMore = false;
@@ -16,7 +19,7 @@
 			  , currentTopic = µC.$currentTopic.val()
 			  , isMessage = new RegExp(µS.btnItemMessage.slice(1),'g')
 			  ;
-			if(currentTopic && isMessage.test(packet.view)) {
+			if((currentTopic || !µC.loadScroll) && isMessage.test(packet.view)) {
 				// if a topic is selected and the view is a message, do not append the message to the stack
 				return;
 			}
@@ -42,6 +45,54 @@
 			$description.val('');
 			$modal.modal('hide');
 		}
+	  , searchMessages: function searchMessages($el) {
+			var $modal = $el.closest('.modal')
+			  , $modalForm = $modal.find('.modal-body form')
+			  , $day = $modalForm.find('select[name="day"]')
+			  , $month = $modalForm.find('select[name="month"]')
+			  , $year = $modalForm.find('select[name="year"]')
+			  , $author = $modalForm.find('input[name="author"]')
+			  , $text = $modalForm.find('input[name="text"]')
+			  , day = $day.val()
+			  , month = $month.val()
+			  , year = $year.val()
+			  , author = $author.val()
+			  , text = $text.val()
+			  , startDate
+			  , endDate
+			  , timestamp
+			  , query = { }
+			  ;
+			if(day && month && year) {
+				startDate = new Date(year + '-' + month + '-' + day + 'T00:00:00.000+01:00');
+				endDate = new Date(year + '-' + month + '-' + day + 'T00:00:00.000+01:00');
+				endDate.setDate(startDate.getDate() + 1);
+				timestamp = {
+					$gt: startDate.getTime()
+				  , $lt: endDate.getTime()
+				};
+				query.timestamp = timestamp;
+			}
+			if(author) {
+				query.author = {
+					$regex: author
+				  , $options: 'i'
+				};
+			}
+			if(text) {
+				query.text = {
+					$regex: text
+				  , $options: 'i'
+				};
+			}
+			framework.socket.searchMessages(query);
+			$day.val('');
+			$month.val('');
+			$year.val('');
+			$author.val('');
+			$text.val('');
+			$modal.modal('hide');
+		}
 	  , cleanStacks: function cleanStacks(stackNames) {
 			if(!stackNames || !stackNames.length) return;
 			$.each(stackNames, function() {
@@ -59,17 +110,19 @@
 			wasSelected ? $el.attr('draggable', false) :  $el.attr('draggable', true);
 		}
 	  , scrollHandler: function scrollHandler() {
-			var scroll = µC.$document.scrollTop()
-			  , scrollBorder = 200
-			  , docH = µC.$document.height()
-			  , winH = µC.$window.height()
-			  , triggerH = docH - winH - scrollBorder
-			  ;
-			µC.loadingStep = µC.loadingStep || 1;
-			if(!µC.loadingMore && scroll > triggerH) {
-				µC.loadingMore = true;
-				µC.loadingStep++;
-				framework.socket.loadMoreMessages();
+			if(µC.loadScroll) {
+				var scroll = µC.$document.scrollTop()
+				  , scrollBorder = 200
+				  , docH = µC.$document.height()
+				  , winH = µC.$window.height()
+				  , triggerH = docH - winH - scrollBorder
+				  ;
+				µC.loadingStep = µC.loadingStep || 1;
+				if(!µC.loadingMore && scroll > triggerH) {
+					µC.loadingMore = true;
+					µC.loadingStep++;
+					framework.socket.loadMoreMessages();
+				}
 			}
 		}
 	  , dragHandler: function dragHandler(e) {
@@ -145,6 +198,25 @@
 			framework.socket.addMessageToTopic(options);
 			e.dataTransfer.clearData();
 			return false;
+		}
+	  , setUseLightTheme: function setUseLightTheme(state) {
+			var siteStylePath = '/stylesheets/'
+			  , bootstrapPath =  '/stylesheets/bootstrap3/'
+			  , siteLightCss = 'style.css'
+			  , boostrapLightCss = 'bootstrap.css'
+			  , siteDarkCss = 'style_dark.css'
+			  , boostrapDarkCss = 'bootstrap_dark.css'
+			  ;
+			if(state) {
+				µC.$siteStyleCss.attr('href', siteStylePath + siteLightCss);
+				µC.$bootstrapCss.attr('href', bootstrapPath + boostrapLightCss);
+			}
+			else {
+				µC.$siteStyleCss.attr('href', siteStylePath + siteDarkCss);
+				µC.$bootstrapCss.attr('href', bootstrapPath + boostrapDarkCss);
+			}
+			Cookies.set('useLightTheme', state, { expires: 3600 });
+			µC.useLightTheme = state;
 		}
 	}
 }());

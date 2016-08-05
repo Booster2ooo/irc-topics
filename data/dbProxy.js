@@ -9,7 +9,7 @@ var /* MODULES */
 	// load events module
   , events = require('events')
 	// load promise module
-  , Promise = require('es6-promise').Promise
+//  , Promise = require('es6-promise').Promise
 	
 	/* INSTANCES */
 	// initiate the eventEmitter
@@ -107,15 +107,12 @@ var /* MODULES */
 						}
 						db[channel][dbname] = db.conn.collection(dbname+channel);
 						if(dbname == 'messages') {
-							db[channel][dbname].createIndex( { timestamp: -1 } );
+							db[channel][dbname].createIndex( { timestamp: 1 } );
 						}
-						else {
+						else if(dbname != 'stats') {
 							db[channel][dbname].createIndex(
 								{ name: 1 }
-							  , {
-									unique: true
-								  , 
-								}
+							  , { unique: true }
 							);
 						}
 						resolve(db[channel][dbname]);
@@ -201,6 +198,7 @@ var /* MODULES */
 						throw 'No type provided';
 					}
 					options.query = options.query || {};
+					options.projection = options.projection || {};
 					// rebuild ids
 					for(var q in options.query) {
 						if(options.query.hasOwnProperty(q) && options.query[q] && q == '_id')
@@ -223,7 +221,7 @@ var /* MODULES */
 							}
 						}
 					}
-					var cursor = db[options.channel][options.type].find(options.query);
+					var cursor = db[options.channel][options.type].find(options.query, options.projection);
 					if(options.sort) {
 						cursor = cursor.sort(options.sort);
 					}
@@ -258,6 +256,7 @@ var /* MODULES */
 						throw 'No type provided';
 					}
 					options.query = options.query || {};
+					options.projection = options.projection || {};
 					// rebuild ids
 					for(var q in options.query) {
 						if(options.query.hasOwnProperty(q) && options.query[q] && q == '_id')
@@ -280,7 +279,7 @@ var /* MODULES */
 							}
 						}
 					}				
-					var cursor = db[options.channel][options.type].find(options.query);
+					var cursor = db[options.channel][options.type].find(options.query,options.projection);
 					if(options.sort) {
 						cursor = cursor.sort(options.sort);
 					}
@@ -337,8 +336,8 @@ var /* MODULES */
 								}
 							}
 						}
-					}				
-					var cursor = db[options.channel][options.type].count(options.query);
+					}
+                    /*var cursor = db[options.channel][options.type].count(options.query);
 					if(options.sort) {
 						cursor = cursor.sort(options.sort);
 					}
@@ -348,15 +347,34 @@ var /* MODULES */
 					if(options.limit) {
 						cursor = cursor.limit(options.limit);
 					}
-					cursor.toArray(function (err, count) {
+					cursor.toArray(function (err, cnt) {
 						if(err) {
 							eventEmitter.emit(config.db.events.countError, err, options);
 							reject(err);
 							return;
 						}
-						eventEmitter.emit(config.db.events.countError, count, options);
-						resolve(count);
+						eventEmitter.emit(config.db.events.countError, cnt, options);
+						resolve(cnt);
 					});
+                     */
+                    db[options.channel][options.type].count(
+                        options.query
+                      , {
+                            limit: options.limit
+                          , skip: options.skip
+                          , hint: options.hint
+                          , readPreference: options.readPreference
+                        }
+                      , function (err, cnt) {
+                            if(err) {
+                                eventEmitter.emit(config.db.events.countError, err, options);
+                                reject(err);
+                                return;
+                            }
+                            eventEmitter.emit(config.db.events.countError, cnt, options);
+                            resolve(cnt);
+                        }
+                    );
 				});
 			}
 			// insert/update for the specified options

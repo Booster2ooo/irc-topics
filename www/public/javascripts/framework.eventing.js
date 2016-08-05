@@ -8,6 +8,8 @@
 				.ready(function() {
 					µC.currentChannel = µC.$currentChannel.val();
 					µC.$tooltips.tooltip();
+					framework.uifx.setUseLightTheme(µC.useLightTheme);
+					µC.$themeSwitch.prop('checked', !µC.useLightTheme);
 				})				
 				.bind('scroll', framework.uifx.scrollHandler)
 				;
@@ -39,10 +41,18 @@
 						return false;
 					}
 				})
+				.on('click', µS.btnSearchMessages, function(e) {
+					e.preventDefault && e.preventDefault();
+					framework.uifx.searchMessages($(this));
+					return false;
+				})
 				.on('click dragover', µS.btnToTop, function(e) {
 					e.preventDefault && e.preventDefault();
 					µC.$document.scrollTop(0);
 					return false;
+				})
+				.on('click', µS.themeSwitch, function(e) {
+					framework.uifx.setUseLightTheme(!µC.useLightTheme);
 				})
 				.on('dragstart', µS.btnItemMessage+'.selected', framework.uifx.dragStartHandler)
 				.on('dragend', µS.btnItemMessage+'.selected', framework.uifx.dragEndHandler)

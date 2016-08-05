@@ -23,7 +23,7 @@ var
 			// define the name of the file where the channel messages logs will be stored at
 //		  , messageLogs: 'irc_messages'
 			// define the irc server used by the bot
-			server: 'irc.xolus.net'
+			server: 'irc.server.net'
 			// define the nickname of the bot
 		  , nick: 'LogTopicTEST'
 			// define the options for the bot constructor (see https://node-irc.readthedocs.org/en/latest/API.html)
@@ -33,7 +33,7 @@ var
 			  , port: 6697
 			  , autoRejoin: true
 			  , autoConnect: true
-			  , channels: ['#n-pm', '#n-pk']
+			  , channels: ['#chan1', '#chan2']
 			  , secure: true
 			  , selfSigned: true
 			  , certExpired: true
@@ -57,6 +57,8 @@ var
 			  , topics: './data/db/topics'
 				// regexp databases file prefix
 			  , regexp: './data/db/regexp'
+				// stats databases file prefix
+			  , stats: './data/db/stats'
 			}
 			// mongoDB connection URL
 		  , mongoURL: 'mongodb://localhost:27017/irc-topics'

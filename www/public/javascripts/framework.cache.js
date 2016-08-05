@@ -16,6 +16,11 @@
 	  , $messagesStack: null
 	  , $tooltips: null
 	  , $btnToTop: null
+	  , $bootstrapCss: null
+	  , $siteStyleCss: null
+	  , $themeSwitch: null
+	  , loadScroll: true
+	  , useLightTheme: true
 	  
 	  , init: function init() {
 			this.$body = $('body');
@@ -32,6 +37,12 @@
 			this.$messagesStack = this.$messagesContainer.find('ul');
 			this.$tooltips = $(µS.tooltips);
 			this.$btnToTop = $(µS.btnToTop);
+			this.$bootstrapCss = $(µS.bootstrapCss);
+			this.$siteStyleCss = $(µS.siteStyleCss);
+			this.$themeSwitch = $(µS.themeSwitch);
+			this.loadScroll = true;
+			this.currentChannel = this.$currentChannel.val();
+			this.useLightTheme = Cookies.get('useLightTheme')=='false' ? false : true;
 		}
 	}
 }());

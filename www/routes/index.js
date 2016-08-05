@@ -2,7 +2,7 @@ var  /* MODULES */
 	// express module
 	express = require('express')
 	// promise module
-  , Promise = require('es6-promise').Promise
+//  , Promise = require('es6-promise').Promise
 	
   , mainRouter = function mainRouter(config, db) {
 		var /* INSTANCES */

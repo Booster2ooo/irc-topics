@@ -1,0 +1,38 @@
+div(class='modal fade', id='searchModal', tabindex='-1', role='dialog', aria-labelledby='searchHeader')
+	div(class='modal-dialog', role='document')
+		div(class='modal-content')
+			div(class='modal-header')
+				button(type='button', class='close', data-dismiss='modal', aria-label='Close')
+					span(aria-hidden='true') &times;
+				h4(class='modal-title', id='searchHeader') Search messages
+			div(class='modal-body')
+				form(class='form-horizontal')
+					div(class='form-group')
+						label(class='col-sm-2') Date
+						div(class='col-sm-3')
+							select(class='form-control', name='day')
+								option(value='') Day
+								- for (var d = 1; d <= 31; d++)
+									- var realValue = d < 10 ? '0' + d : d;
+									option(value=realValue)= realValue
+						div(class='col-sm-3')
+							select(class='form-control', name='month')
+								option(value='') Month
+								- for (var m = 1; m <= 12; m++)
+									- var realValue = m < 10 ? '0' + m : m;
+									option(value=realValue)= realValue
+						div(class='col-sm-4')
+							select(class='form-control', name='year')
+								option(value='') Year
+								- for (var y = 2012, c= new Date().getFullYear(); y <= c; y++)
+									option(value=y)= y
+					div(class='form-group')
+						label(class='col-sm-2') Author
+						div(class='col-sm-10')
+							input(class='form-control', type='text', name='author', placeholder='Author')
+					div(class='form-group')
+						label(class='col-sm-2') Text
+						div(class='col-sm-10')
+							input(class='form-control', type='text', name='text', placeholder='Text')
+			div(class='modal-footer')
+				button(type='button', class='btn btn-default', class='js-message-search' data-dismiss='modal') Search

@@ -23,6 +23,11 @@
 		  
 		  , messagesContainer:	'#messages-container'
 		  , btnItemMessage:		'.js-message-item'
+		  , btnSearchMessages:	'.js-message-search'
+		  
+		  , bootstrapCss:		'#bootstrap'
+		  , siteStyleCss:		'#site-style'
+		  , themeSwitch:		'#theme-switch'
 		}
 	}
 }());

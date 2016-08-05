@@ -2,7 +2,7 @@ var /* MODULES */
 	// socket.IO module
 	socketIO = require('socket.io')
 	// load promise module
-  , Promise = require('es6-promise').Promise
+//  , Promise = require('es6-promise').Promise
   
   , socketIOProxy = function socketIOProxy(config, db, www) {
 		// check whenever a configuration has been passed
@@ -22,11 +22,12 @@ var /* MODULES */
 						.bindAddMessageToTopic(socket)
 						.bindAddTopic(socket)
 						.bindLoadMoreMessages(socket)
+						.bindSearchMessages(socket)
 						;
 				}
 				// when an entity has been inserted in the db
 			  , onEntityInserted: function (entity, options) {
-					if(options.type !== 'users' && options.type !== 'regexp' ) {
+					if(options.type !== 'users' && options.type !== 'regexp' && options.type !== 'stats' ) {
 						www.renderer(options.type+'_entity', { entity: entity })
 							.then(function(view) {
 								io.in(options.channel).emit(
@@ -261,6 +262,59 @@ var /* MODULES */
 											  , sort: { timestamp: -1 }
 											  , skip: 500 * (packet.step-1)
 											  , limit: 500
+											});
+										})									
+										.then(function(docs) {
+											return www.renderer('messages' , { channel: packet.channel, messages: docs});
+										})
+										.then(function(html) {
+											resolve(html);
+										})
+										.catch(function (err) {
+											reject(err);
+										});
+								})
+							  , messagesView
+							  ;
+							
+							messagesRenderPromise
+								.then(function(view) {
+									messagesView = view || '';
+									socket.emit('load_data', {
+										channel: packet.channel
+									  , type: 'messages'
+									  , view: view
+									});
+								})
+								.catch(function(err) {
+									config.debug && console.error(err);
+								});
+						}
+					});
+					return clienthandlers;
+				}
+			  , bindSearchMessages: function bindSearchMessages(socket) {
+					socket.on('searchMessages', function(packet) {
+						if(packet.channel && packet.query && (packet.query.timestamp || packet.query.author || packet.query.text)) {
+							var messagesRenderPromise =  new Promise(function(resolve, reject) {
+									var getTopicPromise = packet.topic ?
+											db.get({
+												channel: packet.channel
+											  , type: 'topics'
+											  , query: { _id: packet.topic }
+											})
+										  :  new Promise(function(resolve, reject) { resolve(); })
+										;
+									getTopicPromise
+										.then(function(topic) {
+											if(topic && topic.messages && topic.messages.length) {
+												packet.query._id = { $in: topic.messages };
+											}
+											return db.getAll({ 
+												channel: packet.channel
+											  , type: 'messages'
+											  , query: packet.query
+											  , sort: { timestamp: -1 }
 											});
 										})									
 										.then(function(docs) {

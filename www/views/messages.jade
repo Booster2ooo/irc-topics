@@ -1,4 +1,9 @@
 include mixins/message
 
+- var previous, current = null
 each message in messages
+	- current = parseInt(formatStamp(message.timestamp).day ,10)
+	if previous && previous != current
+		hr
 	+msg(message)
+	- previous = current

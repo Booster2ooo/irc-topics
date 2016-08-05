@@ -1,7 +1,7 @@
 mixin msg(message)
 	li
 		div(class='message js-message-item', id=message._id, draggable='false')
-			span(class='message-date')= formatStamp(message.timestamp)
+			span(class='message-date')= formatStamp(message.timestamp).datetime
 			span &nbsp; | &nbsp; 
 			span(class='message-author')= message.author 
 			span &nbsp; >&nbsp;
