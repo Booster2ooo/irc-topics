@@ -5,7 +5,7 @@ block content
 		div(class='col-md-2')
 			h1= title
 			div Welcome to #{title} &nbsp;
-				span(class='glyphicon glyphicon-info-sign',data-toggle='tooltip', data-placement='bottom', title='Click to select messages then drag&drop them to the desired topic')
+				span(id='site-infos',class='glyphicon glyphicon-info-sign',data-toggle='tooltip', data-placement='bottom', title='IRC Topics')
 				input(id= 'theme-switch', class='tgl tgl-light', type='checkbox')
 				label(class='tgl-btn', for='theme-switch')
 		div(class='col-md-10', id='channels-container')

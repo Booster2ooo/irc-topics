@@ -1,18 +1,32 @@
 var utils = require('./utils.js')
   , statsHelper = function statsHelper(db) {
         if(!db) throw 'Stats helper: instance of dbProxy not found';
-        var isEqual = function isEqual(key, value, item) {
+        var statsCount = null
+          , isEqual = function isEqual(key, value, item) {
                 return item[key] == value;
             }
           , contains = function contains(key, value, items) {
                 return items.some(isEqual.bind(null, key, value));
             }
-          , groupBy = function groupBy(key, acc, item) {
-                var group = acc.filter(contains.bind(null, key, item[key]));
+          , groupBy = function groupBy(key, acc, item, index) {
+                /*var group = acc.filter(contains.bind(null, key, item[key]));
                 if (group.length > 0) {
                     group[0].push(item)
                 } else {
                     acc.push([item])
+                }
+                return acc;*/
+                var ret;
+                acc[item[key]] = acc[item[key]] || [];
+                acc[item[key]].push(item);
+                ret = acc;
+                if(statsCount == index+1) {
+                    ret = Object.keys(acc).map(function(k) {
+                        //var r = {};
+                        //r.push(acc[k]);
+                        return acc[k];
+                    });
+                    acc = ret;
                 }
                 return acc;
             }
@@ -69,8 +83,10 @@ var utils = require('./utils.js')
                               , query: {date: {$gte: date} }
                             })
                             .then(function (stats) {
+                                statsCount = stats.length;
                                 var results = stats
-                                    .reduce(groupBy.bind(null, 'author'), [])
+                                    //.reduce(groupBy.bind(null, 'author'), [])
+                                    .reduce(groupBy.bind(null, 'author'), {})
                                     .map(merge)
                                     .map(average.bind(null, 'wordsPerLine', 'words', 'lines'))
                                     .map(average.bind(null, 'linksPerLine', 'links', 'lines'))

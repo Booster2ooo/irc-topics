@@ -28,6 +28,7 @@
 		  , bootstrapCss:		'#bootstrap'
 		  , siteStyleCss:		'#site-style'
 		  , themeSwitch:		'#theme-switch'
+          , siteInfos:          '#site-infos'
 		}
 	}
 }());

@@ -7,7 +7,7 @@
 			µC.$document
 				.ready(function() {
 					µC.currentChannel = µC.$currentChannel.val();
-					µC.$tooltips.tooltip();
+                    framework.uifx.activateTooltips();
 					framework.uifx.setUseLightTheme(µC.useLightTheme);
 					µC.$themeSwitch.prop('checked', !µC.useLightTheme);
 				})				

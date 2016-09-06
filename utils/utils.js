@@ -23,7 +23,7 @@ var utils = {
 		  , seconds: seconds
 		};
 	}
-  , dateExpressions: [ 'today', 'yesterday', 'week', 'month', 'year', 'all' ]
+  , dateExpressions: [ 'today', 'yesterday', 'week', 'lastweek', 'month', 'year', 'all' ]
   , expressionToDate: function expressionToDate(text) {
         if(utils.dateExpressions.indexOf(text) == -1) {
             return;
@@ -36,6 +36,9 @@ var utils = {
                 break;
             case 'week':
                 returnDate.setDate(returnDate.getDate() - returnDate.getDay() + 1);
+                break;
+            case 'lastweek':
+                returnDate.setDate(returnDate.getDate() - returnDate.getDay() + 1 - 7);
                 break;
             case 'month':
                 returnDate.setDate(1);

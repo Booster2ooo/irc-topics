@@ -18,6 +18,7 @@
 	  , $btnToTop: null
 	  , $bootstrapCss: null
 	  , $siteStyleCss: null
+      , $siteInfos: null
 	  , $themeSwitch: null
 	  , loadScroll: true
 	  , useLightTheme: true
@@ -40,6 +41,7 @@
 			this.$bootstrapCss = $(µS.bootstrapCss);
 			this.$siteStyleCss = $(µS.siteStyleCss);
 			this.$themeSwitch = $(µS.themeSwitch);
+            this.$siteInfos = $(µS.siteInfos);
 			this.loadScroll = true;
 			this.currentChannel = this.$currentChannel.val();
 			this.useLightTheme = Cookies.get('useLightTheme')=='false' ? false : true;

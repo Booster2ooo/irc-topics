@@ -218,5 +218,36 @@
 			Cookies.set('useLightTheme', state, { expires: 3600 });
 			µC.useLightTheme = state;
 		}
-	}
+      , displaySiteInfos: function displaySiteInfos() {
+
+        }
+	  , activateTooltips: function activateTootips() {
+            µC.$tooltips.each(function() {
+                var $toolTip = $(this);
+                if($toolTip.is(µC.$siteInfos)) {
+                    $toolTip.tooltip({
+                        template: `
+                    <div class="tooltip" role="tooltip">\
+                        <div class="tooltip-arrow">
+                        </div>
+                        <div class="tooltip-inner">
+                        </div>
+                        <div class="tooltip-body">
+                            * Change the theme using the slide input on the right of this icon<br/>
+                            * Select the desired channel in the "Channel selection" dropdown<br/>
+                            -- Logs and topics:<br/>
+                            * Read logs, change or add topics<br/>
+                            * Click to select some messages then drag&drop them into the desired topic<br/>
+                            * Seach using the search window
+                            -- Stats:<br/>
+                        </div>
+                    </div>`
+                    });
+                }
+                else {
+                    $toolTip.tooltip();
+                }
+            });
+        }
+    }
 }());

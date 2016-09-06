@@ -56,7 +56,7 @@ var /* MODULES */
 				return new Promise(function(resolve, reject) {
 					// if the first letter of the first word isn't !, then assume it's not a command
 					if(textParts[0][0] != "!") {
-						reject('No command found');
+						return reject('No command found');
 					}
 					// copy provided array
 					var parts = textParts.slice(0)
@@ -111,14 +111,29 @@ var /* MODULES */
             }
 		  , announceTop = function announceTop() {
                 config.irc.options.channels.forEach(function(channel) {
-                    var statsContext = {
-                        field: 'words'
-                      , period: 'yesterday'
-                      , limit: 5
-                      , channel: channel
-                    };
+                    var date = new Date()
+                      , statsContext = {
+                            field: 'words'
+                          , period: 'yesterday'
+                          , limit: 5
+                          , channel: channel
+                        }
+                      ;
                     statsHelper
                         .getStats(statsContext)
+                        .then(function(stats) {
+                            var msg = "Top " + statsContext.limit + " " + statsContext.field + " count (" +  statsContext.period + ") --- ";
+                            stats.forEach(function(line, idx) {
+                                msg += (idx+1).toString() + '. ' + line.author + ': ' + line[statsContext.field] + ' | ';
+                            });
+                            ircClient.say(channel, msg.substr(0, msg.length - 2));
+                            date.setDate(date.getDate() - 1);
+                            if(date.getDay() != 0) {
+                                throw "Not Sunday";
+                            }
+                            statsContext.period = 'lastweek';
+                            return statsHelper.getStats(statsContext);
+                        })
                         .then(function(stats) {
                             var msg = "Top " + statsContext.limit + " " + statsContext.field + " count (" +  statsContext.period + ") --- ";
                             stats.forEach(function(line, idx) {
@@ -128,7 +143,8 @@ var /* MODULES */
                             resolve();
                         })
                         .catch(function(err) {
-                            reject(err);
+                            config.debug && console.error(err);
+                            config.debug && err.stack && console.error(err.stack);
                         });
                 });
             }
@@ -680,7 +696,7 @@ var /* MODULES */
                                     setTimeout(function() {
                                         ircClient.say(
                                             cmd.nick
-                                          , line.author +
+                                          , '#' + (idx+1) + '. '+ line.author +
                                             ' - words: ' + line.words +
                                             ' - lines: ' + line.lines +
                                             ' - links: ' + line.links +
@@ -757,9 +773,14 @@ var /* MODULES */
 						statsHelper
                             .getStats(statsContext)
                             .then(function(stats) {
-                                var msg = "Top " + statsContext.limit + " " + statsContext.field + " count (" +  statsContext.period + ") --- ";
+                                var msg = '';
+                                ircClient.say(cmd.nick, "Top " + statsContext.limit + " " + statsContext.field + " count (" +  statsContext.period + ")");
                                 stats.forEach(function(line, idx) {
                                     msg += (idx+1).toString() + '. ' + line.author + ': ' + line[statsContext.field] + ' | ';
+                                    if((idx+1) % 10 == 0) {
+                                        ircClient.say(cmd.nick, msg.substr(0, msg.length - 2));
+                                        msg='';
+                                    }
                                 });
                                 ircClient.say(cmd.nick, msg.substr(0, msg.length - 2));
                                 resolve();
@@ -805,14 +826,15 @@ var /* MODULES */
 						.catch(function() {
 							// no command, continue logging
 							// detect topic
-							if(textParts[textParts.length-1][0] == '@') {
+                            /** Not used, gets messy -> removed
+							/*if(textParts[textParts.length-1][0] == '@') {
 								// pop out the last word from the textPart array as the topic name [review] (use some kind of constructor?)
 								topic = {
 									name: textParts.pop()
 								  , description: ''
 								  , messages: []
 								};
-							}							
+							}*/
 							
 							// check if there still is something to log (eg, the @topic was the only word of the message)
 							if(textParts.length) {

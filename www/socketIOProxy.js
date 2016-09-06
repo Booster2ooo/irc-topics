@@ -27,7 +27,11 @@ var /* MODULES */
 				}
 				// when an entity has been inserted in the db
 			  , onEntityInserted: function (entity, options) {
-					if(options.type !== 'users' && options.type !== 'regexp' && options.type !== 'stats' ) {
+					if(
+                        options.type !== 'users'
+                      && options.type !== 'regexp'
+                      && options.type !== 'stats'
+                    ) {
 						www.renderer(options.type+'_entity', { entity: entity })
 							.then(function(view) {
 								io.in(options.channel).emit(
@@ -131,6 +135,7 @@ var /* MODULES */
 					});
 					return clienthandlers;
 				}
+                /* logs*/
 			  , bindSelectTopic: function bindSelectTopic(socket) {
 					socket.on('selectTopic', function(packet) {
 						if(packet.channel && packet.topic) {
@@ -346,7 +351,11 @@ var /* MODULES */
 					});
 					return clienthandlers;
 				}
-			  
+			    /* end of logs*/
+
+                /* stats */
+
+                /* end of stats*/
 			}
 			/* FUNCTIONS */
 			// create a socketIO channel for each IRC channel
@@ -357,15 +366,15 @@ var /* MODULES */
 				});
 			}
 		*/
-			// emit data received from IRC to the HTTP client
-		  , dataEmitter = function dataEmitter() {
+			// emit data received
+		  , listendDb = function listendDb() {
 				db.onInsert(handlers.onEntityInserted);
 			}
 			/* INSTANCES */
 		  , io = socketIO(www.server)
 		  ;
-		io.on('connection', handlers.onConnectionHanlder);		
-		dataEmitter();
+		io.on('connection', handlers.onConnectionHanlder);
+        listendDb();
 		return io;
 	}
   ;
