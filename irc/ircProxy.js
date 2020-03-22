@@ -49,7 +49,9 @@ var /* MODULES */
                 "(>_<)", "(>_<)>", "(';')", "(^^ゞ", "(^_^;)", "(-_-;)", "(~_~;)", "(・。・;)", "(・_・;)", "(・・;)", "^^;", "^_^;", "(#^.^#)", "(^^;)", ".。o○ ○o。.", "<コ:彡", "(^。^)y-.。o○", "(-。-)y-゜゜゜", "(-_-)zzz", "(^_-)", "(^_-)-☆", "((+_+))", "(+o+)", "(゜゜)", "(゜-゜)", "(゜.゜)", "(゜_゜)", "(゜_゜>)", "(゜レ゜)", "o)", "<(｀^´)>", "^_^", "(゜o゜)", "(^_^)/", "(^O^)／", "(^^)/", "(≧∇≦)/", "(/◕ヮ◕)/", "(^o^)丿", "∩(・ω・)∩", "(・ω・)", "^ω^", "(__)", "_(._.)_", "_(_^_)_", "<(_ _)>", "<m(__)m>", "m(__)m", "m(_ _)m", "(゜゜)～", "( ^^)", "_U~~", "_旦~~", "☆彡", "☆ミ", "＼(゜ロ＼)ココハドコ?", "(／ロ゜)／アタシハダアレ?", ">゜)))彡", "(Q))", "><ヨヨ", "(゜))<<", ">゜))))彡", "<゜)))彡", ">゜))彡", "<+))><<<", "*))>=<", "('_')", "(/_;)", "(T_T)", "(;_;)", "(;_:)", "(;O;)", "(:_;)", "(ToT)", "(Ｔ▽Ｔ)", ";_;", ";-;", ";n;", ";;", "Q.Q", "T.T", "QQ", "Q_Q", "(ー_ー)!!", "(-.-)", "(-_-)", "(一一)", "(；一_一)", "Ｃ:。ミ", "(=_=)", "~>゜)～～～　", "～゜・_・゜～　", "(=^・^=)", "(=^・・^=)", "=_^=", "(..)", "(._.)", "^m^", "(・・?", "(?_?)", "(－‸ლ)", ">^_^<", "<^!^>", "^/^", "（*^_^*）", "§^。^§", "(^<^)", "(^.^)", "(^ム^)", "(^・^)", "(^。^)", "(^_^.)", "(^_^)", "(^^)", "(^J^)", "(*^。^*)", "（＾－＾）", "(^^)/~~~", "(^_^)/~", "(;_;)/~~~", "(^.^)/~~~", "($・・)/~~~", "(@^^)/~~~", "(T_T)/~~~", "(ToT)/~~~", "●～*", "(V)o￥o(V)", "＼(~o~)／", "＼(^o^)／", "＼(-o-)／", "ヽ(^。^)ノ", "ヽ(^o^)丿", "(*^0^*)", "(*_*)", "(*_*;", "(+_+)", "(@_@)", "(@_@。", "(＠_＠;)", "＼(◎o◎)／！", "(-_-)/~~~ピシー!ピシー!", " !(^^)!", "(*^^)v", "(^^)v", "(^_^)v", "(＾▽＾)", "（・∀・）", "（　´∀｀）", "（⌒▽⌒）", "（＾ｖ＾）", "（’-’*)", "(~o~)", "(~_~)", "(p_-)", "((d[-_-]b))", "(-\"-)", "(ーー゛)", "(^_^メ)", "(-_-メ)", "(｀´）", "(~_~メ)", "(－－〆)", "(・へ・)", "<`～´>", "<`ヘ´>", "(ーー;)", "(^0_0^)", "( ..)φメモメモ", "φ(..)メモメモ", ":3ミ", ":->", "8-<", ":-)", ":-<", ":(", ":-(", ":)", ":|", ":-|", "（●＾o＾●）", "（＾ｕ＾）", "（＾◇＾）", "( ^)o(^ )", "(^O^)", "(^○^)", ")^o^(", "(*^▽^*)", "(✿◠‿◠)", "（￣ー￣）", "（￣□￣；）", "°o°", ":O", "o_O", "o_0", "o.O", "(o.o)", "（*´▽｀*）", "(*°∀°)=3", "（ ﾟ Дﾟ）", "（゜◇゜）", "(*￣m￣)", "ヽ（´ー｀）┌", "¯\\_(ツ)_/¯", "(´･ω･`)", "(‘A`)", "(*^3^)/~☆", ".....φ(・∀・＊)", "キタ━━━(゜∀゜)━━━!!!!! ", "(╯°□°）╯︵ ┻━┻", "┬──┬ ¯\\_(ツ)", "┻━┻︵ヽ(`Д´)ﾉ︵ ┻━┻", "┬─┬ノ( º _ ºノ)", "(ノಠ益ಠ)ノ彡┻━┻", ":D", ":o)", ":]", ":3", ":c)", ":>", "=]", "8)", "=)", ":}", ":^)", ":っ)", ":-D", "8-D", "8D", "x-D", "xD", "=-D", "=-3", "=3", "B^D", ":-))", ">:[", ":-c", ":c", ":っC", ":<", ":-[", ":[", ":{", ";(", ":-||", ":@", ">:(", ":'-(", ":'(", ":'-)", ":')", "D:<", "D:", "D8", "D;", "D=", "DX", "v.v", "D-':", ">:O", ":-O", "8-0", "o-o", ":*", ":-*", ":^*", ";-)", ";)", "*-)", "*)", ";-]", ";]", ";D", ";^)", ":-,", ">:P", ":-P", ":P", "X-P", "xp", ":-Þ", ":Þ", ":-b", ":b", ">:\\", ">:/", ":-/", ":-.", ":/", ":\\", "=/", ":L", ":S", ">.<", ":$", ":-X", ":X", ":-#", ":#", "O:-)", "0:-3", "03", "0:-)", "0:)", "0;^)", ">:)", ">;)", ">:-)", "}:-)", "}:)", "3:-)", "3:)", "o/\\o", "^5", ">_>^", "^<_<", "|;-)", "|-O", ":-J", ":-&", ":&", "#-)", "%-)", "%)", ":-###..", ":###..", "<:-|", "ಠ_ಠ", "(", "͡°", "͜ʖ", "͡°)(", "͡°͜", "͡°)", "<*)))-{", "><(((*>", "><>", "\\o/", "*\\0/*", "@}-;-'---", "@>-->--", "~(_8^(I)", "5:-)", "~:-\\", "//0-0\\\\", "*<|:-)", "=:o]", "7:^]", ",:-)", "</3", "<3"
             ]
           , emojisSet = new Set(emojis)
-			
+			// game terms (used for stats)
+		  , gameRegExp = /@|jeu|game|perte|perdu|perdue|perdre|perdant|perdante|perd|perds|perda|perdais|perdait|perdaient|perdrais|perdrait|perdrai|perdra|perdras|lose|lost|perdu|g@me|gayme|賽|遊|spel|jeux|spiel|juego/g
+
 			/* FUNCTIONS */
 			// try to find and execute a bot command
 		  , tryCommand = function tryCommand(channel, nick, textParts) {
@@ -701,9 +703,13 @@ var /* MODULES */
                                             ' - lines: ' + line.lines +
                                             ' - links: ' + line.links +
                                             ' - emojis: ' + line.emojis +
+                                            ' - game losses: ' + line.gameLost +
+                                            ' - game terms: ' + line.gameTerms +
                                             ' - words per line: ' + line.wordsPerLine +
                                             ' - links per line: ' + line.linksPerLine +
-                                            ' - emojis per line: ' + line.emojisPerLine
+                                            ' - emojis per line: ' + line.emojisPerLine +
+                                            ' - game losses per line: ' + line.gameLostPerLine +
+                                            ' - game terms per line: ' + line.gameTermsPerLine
                                         );
                                     }, 500 * (idx+1));
                                 });
@@ -805,7 +811,9 @@ var /* MODULES */
                           , lines: 1
                           , words: textParts.length
                           , links: 0
-                          , emojis: 0
+						  , emojis: 0
+						  , gameLost: 0
+						  , gameTerms: 0
                         }
 					  ;
 					// check if the message really comes from a channel (should not be triggered as the message event specifies a channel)
@@ -902,12 +910,17 @@ var /* MODULES */
 										.catch(function (err) {
 											config.debug && console.error(err);
 										});
-                                        // looking for emojis
+                                        // looking for emojis & game terms
                                         for(var i = 0, c = textParts.length; i<c; i++) {
                                             if(emojisSet.has(textParts[i])) {
                                                 stat.emojis++;
-                                            }
-                                        }
+											}
+										}
+										var gameMatches = message.text.match(gameRegExp);
+										if (gameMatches) {
+											stat.gameLost = 1;
+											stat.gameTerms += gameMatches.length;
+										}
                                         //creating or updating stats
                                         db.get({
                                             channel: channel
@@ -921,7 +934,15 @@ var /* MODULES */
                                             dbstat.lines += stat.lines;
                                             dbstat.words += stat.words;
                                             dbstat.links += stat.links;
-                                            dbstat.emojis += stat.emojis;
+											dbstat.emojis += stat.emojis;
+											if (dbstat.gameLost) 
+												dbstat.gameLost += stat.gameLost;
+											else
+												dbstat.gameLost = stat.gameLost;
+											if (dbstat.gameTerms)
+												dbstat.gameTerms += stat.gameTerms;
+											else
+												dbstat.gameTerms = stat.gameTerms;
                                             return db.append({ channel: channel, type: 'stats', entity: dbstat});
                                         })
                                         .catch(function (err) {

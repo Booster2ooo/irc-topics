@@ -51,6 +51,8 @@ var utils = require('./utils.js')
                   , words: current.words + previous.words
                   , links: current.links + previous.links
                   , emojis: current.emojis + previous.emojis
+                  , gameLost: current.gameLost + previous.gameLost
+                  , gameTerms: current.gameTerms + previous.gameTerms
                 };
             }
           , merge = function merge(group) {
@@ -91,7 +93,9 @@ var utils = require('./utils.js')
                                     .map(average.bind(null, 'wordsPerLine', 'words', 'lines'))
                                     .map(average.bind(null, 'linksPerLine', 'links', 'lines'))
                                     .map(average.bind(null, 'emojisPerLine', 'emojis', 'lines'))
-                                    .sort(orderBy.bind(null, context.info || helper.topFields[0], 'desc'));
+                                    .map(average.bind(null, 'gameLostPerLine', 'gameLost', 'lines'))
+                                    .map(average.bind(null, 'gameTermsPerLine', 'gameTerms', 'lines'))
+                                    .sort(orderBy.bind(null, context.field || helper.topFields[0], 'desc'));
                                 if(context.limit) {
                                     results = results.filter(limit.bind(null, context.limit))
                                 }
@@ -105,7 +109,7 @@ var utils = require('./utils.js')
                             });
                     });
                 }
-              , topFields: [ 'words', 'lines', 'links', 'emojis', 'wordsPerLine', 'linksPerLine', 'emojisPerLine' ]
+              , topFields: [ 'words', 'lines', 'links', 'emojis', 'gameLost', 'gameTerms', 'wordsPerLine', 'linksPerLine', 'emojisPerLine', 'gameLostPerLine', 'gameTermsPerLine' ]
             }
           ;
         return helper;
