@@ -18,7 +18,7 @@
     "irc": "^0.3.12",
     "jade": "~1.11.0",
     "less-middleware": "1.0.x",
-    "mongodb": "^2.0.42",
+    "mongodb": "^3.6.1",
     "morgan": "~1.6.1",
     "nedb": "^1.1.2",
     "serve-favicon": "~2.3.0",
